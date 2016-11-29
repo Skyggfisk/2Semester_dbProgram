@@ -6,7 +6,6 @@ import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Label;
 import javafx.util.Duration;
 
 public class Main {
@@ -21,19 +20,9 @@ public class Main {
 		if(args[2] == "y"){
 			fillDailyMessages();
 		}
-		while(true){
-			addValuesToSpeed();
-			addValuesToBatch();
-			addValuesToSlaughterAmount();
-			try {
-				System.out.println("sleeping ...");
-				TimeUnit.SECONDS.sleep(60);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		startWorker(5, 1); //refresh rate and job; 1 = slaughter, 2 = batch, 3 = speed
 	}
-	
+
 	private static void addValuesToSlaughterAmount() {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(100000) + 50000;
@@ -61,6 +50,9 @@ public class Main {
 		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, 650, time.getTime()));		
 	}
 
+	/**
+	 * one time run, needs work
+	 */
 	private static void fillDailyMessages() {
 		for (int i = 0; i < 4; i++) {
 			long stoptime = rand.nextLong();
@@ -69,6 +61,9 @@ public class Main {
 		}		
 	}
 
+	/**
+	 * one time run, needs work
+	 */
 	public static void fillProductionStop(){
 		long stoptime = rand.nextLong();
 		String stopdescription = "something happened" + stoptime;
@@ -77,8 +72,12 @@ public class Main {
 		System.out.println("production stop: " + AddValuesToDB.addValuesProductionStop(stoptime, stoplength, stopdescription, teamid));
 	}
 	
-    public void startWorker(int refreshrate){
-    	Worker speedWorker = new Worker();
+    /**
+     * start these bitches from main; 3 pcs, one for each value to insert.
+     * @param refreshrate
+     */
+    public static void startWorker(int refreshrate, int type){
+    	Worker speedWorker = new Worker(type);
     	speedWorker.setPeriod(Duration.seconds(refreshrate));
     	speedWorker.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			
@@ -91,9 +90,19 @@ public class Main {
     }
     
     private static class Worker extends ScheduledService<String> {
-
-		public Worker() {
-			//nothing to do  ... set field type??
+    	// TODO this needs work
+		public Worker(int type) {
+			switch(type){
+			case 1:
+				addValuesToSlaughterAmount();
+				break;
+			case 2:
+				addValuesToBatch();
+				break;
+			case 3:
+				addValuesToSpeed();
+				break;
+			}
 		}
 		
 		/**
