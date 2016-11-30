@@ -1,7 +1,10 @@
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.transform.Templates;
 
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -10,99 +13,127 @@ import javafx.event.EventHandler;
 import javafx.util.Duration;
 
 public class Main {
+	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	static Date time = new Date();
 	static Random rand = new Random();
 	public static void main(String[] args) {
-		args[1] = "n";	// insert production stop messages? y/n
-		args[2] = "n";	// insert daily messages? y/n
-		args[3] = "n";  // insert batches? y/n
-		args[4] = "n";	// insert teams? y/n
-		args[5] = "n";	// insert teamtimetable? y/n
-		if(args[1] == "y"){
-			fillProductionStop();
-		}
-		if(args[2] == "y"){
-			fillDailyMessages();
-		}
-		if(args[3] == "y"){
+			//fillProductionStop();
+			//fillDailyMessages();
 			fillBatches();
-		}
-		if(args[4] == "y"){
 			fillTeams();
-		}
-		if(args[5] == "y"){
 			fillTimeTable();
-		}
-		startWorker(60, 1); //refresh rate (seconds) and job; 1 = slaughter, 2 = emptybraces, 3 = speed
-		startWorker(60, 2);
-		startWorker(60, 3);
+			addValuesToEmptyBraces();
+		//}
+		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed
+		//startWorker(60, 1);
+		//startWorker(60, 2);
+		//startWorker(60, 3);
 	}
 
+	/**
+	 * good stuff
+	 */
 	private static void fillTimeTable() {
-		for (int i = 0; i < 12; i++) { // weeks (84 days total)
-			for (int j = 0; j < 5; j++) { // days
-				//TODO
-				System.out.println(AddValuesToDB.addValuesToTimeTable(i, i, i));
-			}
+		//1480278600000 sunday 20.30	// 1480305600000 monday 04.00 // nightteam
+		//1480305600000 monday 04.00	// 1480334400000 monday 12.00 // dayteam
+		String tmpString = databasename;
+		long oneday = 86400000L;
+		long nightstart = 1480278600000L; long nightend = 1480305600000L;
+		long daystart = 1480305600000L; long dayend = 1480334400000L;
+		for (int i = 0; i < 83; i++) { 
+				int day = i%7;
+				if(day == 5 ||day == 6){
+					//tmpString += System.lineSeparator() + " sunday or saturday";
+				} else{
+					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, team) VALUES ("+ daystart +", "+ dayend +" , (SELECT id FROM team WHERE teamname = 'dag' AND department = 1));";
+					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, team) VALUES ("+ nightstart +", "+ nightend +" , (SELECT id FROM team WHERE teamname = 'nat' AND department = 1));";
+				}
+				nightstart += oneday;
+				nightend += oneday;
+				daystart += oneday;
+				dayend += oneday;
 		}
-		printToSQLFile();
+		printToSQLFile(tmpString, "TeamTimeTable");
 	}
 
-	private static void printToSQLFile() {
-		// TODO Auto-generated method stub
-		
+	private static void printToSQLFile(String tmpString, String filename) {
+		try {
+			filename += ".sql";
+			PrintWriter writer = new PrintWriter(filename, "UTF-8");
+			writer.print(tmpString);
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void fillTeams() {
-		System.out.println(AddValuesToDB.addValuesToTeams("nat", 46, 1));
-		System.out.println(AddValuesToDB.addValuesToTeams("dag", 50, 1));
-		printToSQLFile();
+		String tmpString = databasename;
+		tmpString += System.lineSeparator() + " INSERT INTO team (teamname, workers, department) VALUES ('nat', 46, 1);";
+		tmpString += System.lineSeparator() + " INSERT INTO team (teamname, workers, department) VALUES ('dag', 50, 1);";
+		printToSQLFile(tmpString, "Teams");
 	}
 
 	private static void addValuesToSlaughterAmount() {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(100000) + 50000;
-		int teamid = rand.nextInt(1);
+		int teamid = rand.nextInt(2);
 		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, teamid, time.getTime()));
 	}
 	
 	private static void fillBatches() {
-		for (int i = 0; i < 5; i++) { //TODO fixed amount
-			int batchnr = rand.nextInt(10) + 1;
-			String farmer = "lars";
-			int batchvalue = rand.nextInt(10000) + 10000;
-			long timeofslaughter = rand.nextInt(90000) + 100000;
-			boolean organic = rand.nextBoolean();
-			int housenr = rand.nextInt(10) + 1;
-			int avgweight = rand.nextInt(500) + 500;
-			int teamnighttimetableid = rand.nextInt(10)+1;	//TODO
-			int teamdaytimetableid = rand.nextInt(10)+1;	//TODO
-			System.out.println("batch: " + AddValuesToDB.addValuesBatch(batchvalue, timeofslaughter, organic, batchnr, housenr, farmer, avgweight, teamnighttimetableid, teamdaytimetableid));	
+		long dayend = 1480334400000L;
+		long nightend = 1480305600000L;
+		long oneday = 86400000L;
+		String tmpString = databasename;
+		for (int i = 0; i < 83; i++) {
+			int day = i%7;
+			if(day == 5 ||day == 6){
+				//tmpString += System.lineSeparator() + " sunday or saturday";
+			} else {
+				for (int j = 0; j < 9; j++) {
+					boolean organic = false;
+					if(day == 0 || day == 2){
+						organic = rand.nextBoolean();
+					}
+					Long timeofslaughter = dayend - 150000;
+					int batchnr = rand.nextInt(10) + 1;
+					String farmer = "lars" + rand.nextInt(10);
+					int batchvalue = rand.nextInt(10000) + 10000;
+					int housenr = rand.nextInt(10) + 1;
+					int avgweight = rand.nextInt(2000) + 1500;
+					String teamnighttimetableid = "(SELECT id FROM teamtimetable WHERE endtimestamp = '" + nightend +"')";
+					String teamdaytimetableid = "(SELECT id FROM teamtimetable WHERE endtimestamp = '" + dayend + "')";
+					tmpString += System.lineSeparator() + " INSERT INTO batch (value, timeofslaughter, organic, batchnr, housenr, farmer, avgweight, teamnighttimetableid, teamdaytimetableid) VALUES (" + batchvalue + ", " + timeofslaughter + ", '" + organic + "', " + batchnr + ", " + housenr + ", '" + farmer + "', " + avgweight + ", " + teamnighttimetableid + ", " + teamdaytimetableid + ");";
+				}
+			}
+			dayend += oneday;
+			nightend += oneday;
 		}
-		printToSQLFile();
+		printToSQLFile(tmpString, "Batches");
 	}
 	
 	private static void addValuesToEmptyBraces(){
 		int value = rand.nextInt(1);
-		int teamid = rand.nextInt(1);
-		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, teamid));
+		int teamid = rand.nextInt(2); //fix
+		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(value, teamid));
 	}
 
 	private static void addValuesToSpeed() {
 		int speedval = rand.nextInt(1000) + 50;
-		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, 650, time.getTime()));		
+		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, 650, time.getTime()));
 	}
 
 	/**
 	 * one time run, needs work
 	 */
 	private static void fillDailyMessages() {
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) { // fix amount to ????
 			long stoptime = rand.nextLong();
 			String dmessage = "my message" + stoptime;
 			System.out.println("daily messages: " + AddValuesToDB.addValuesDailyMessage(dmessage, time.getTime(), time.getTime()+100000, time.getTime()+10000));	
 		}
-		printToSQLFile();
+		printToSQLFile(null, null);
 	}
 
 	/**
@@ -116,7 +147,7 @@ public class Main {
 			int teamid = rand.nextInt(1);
 			System.out.println("production stop: " + AddValuesToDB.addValuesProductionStop(stoptime, stoplength, stopdescription, teamid));
 		}
-		printToSQLFile();
+		printToSQLFile(null, null);
 	}
 	
     /**

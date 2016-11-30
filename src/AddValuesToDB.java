@@ -149,18 +149,17 @@ public class AddValuesToDB {
 		return "true";
 	}
 
-	public static String addValuesToEmptyBraces(long starttimestamp, int value, int teamid) {
+	public static String addValuesToEmptyBraces(int value, int teamid) {
 		PreparedStatement statement = null;
-		String query = "INSERT INTO emptybraces (starttimestamp, value, teamid) VALUES (?, ?, ?)";
+		String query = "INSERT INTO emptybraces (value, teamid) VALUES (?, ?)";
 		Connection con = null;
 		
 		try {
 			con = DBConnection.getInstance().getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
-			statement.setLong(1, starttimestamp);
-			statement.setInt(2, value);
-			statement.setInt(3, teamid);
+			statement.setInt(1, value);
+			statement.setInt(2, teamid);
 			statement.executeQuery();
 			con.commit();
 		} catch (Exception e) {
