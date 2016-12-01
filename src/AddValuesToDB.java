@@ -68,7 +68,7 @@ public class AddValuesToDB {
 	
 	public static String addValuesSlaughterAmount(int value, int batchid, int teamid, long satimestamp) {
 		PreparedStatement statement = null;
-		String query = "INSERT INTO slaughteramount (value, batchid, satimestamp, teamid) VALUES (?, ?, ?, ?)";
+		String query = "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (?, ?, ?, ?)";
 		Connection con = null;
 		
 		try {
@@ -153,7 +153,7 @@ public class AddValuesToDB {
 
 	public static String addValuesToEmptyBraces(long timestamp, int value, int teamid) {
 		PreparedStatement statement = null;
-		String query = "INSERT INTO emptybraces (starttimestamp, value, teamid) VALUES (?, ?, ?)";
+		String query = "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (?, ?, ?)";
 		Connection con = null;
 		
 		try {

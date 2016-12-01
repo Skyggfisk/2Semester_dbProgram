@@ -85,7 +85,7 @@ public class Main {
 	}
 
 	/**
-	 * working on it ...
+	 * works? needs test
 	 */
 	private static void addValuesToSlaughterAmount() {
 		int batchnr = rand.nextInt(10) + 1;
@@ -126,12 +126,11 @@ public class Main {
 	}
 	
 	/**
-	 * almost works, FIX teamIDint
+	 * works, needs test
 	 */
 	private static void addValuesToEmptyBraces(){
 		int value = rand.nextInt(1);
-		int teamIDint = rand.nextInt(1)+1;
-		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, teamIDint));
+		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, teamid));
 	}
 
 	/**
@@ -194,7 +193,7 @@ public class Main {
 					String stopdescription = "Something Broke at time: " + stoptimeOffSet;
 					int stoplength = rand.nextInt(2) + 1;
 					String teamid = "SELECT id FROM teamtimetable WHERE endtimestamp = " + dayend;
-					tmpString += System.lineSeparator() + "INSERT INTO productionstop (stoptime, stoplength, stopdescription, teamid) VALUES (" + stoptime + ", " + stoplength + ", '" + stopdescription + "', (" + teamid + "));";
+					tmpString += System.lineSeparator() + "INSERT INTO productionstop (stoptime, stoplength, stopdescription, teamtimetableid) VALUES (" + stoptime + ", " + stoplength + ", '" + stopdescription + "', (" + teamid + "));";
 				}
 			}
 			dayend += oneday;
