@@ -274,7 +274,7 @@ public class Main extends Application{
 			case "iterations":
 				setIterations(value);
 				break;
-			case "runsingletimes":
+			case "runsingletime":
 				fillProductionStop();
 				fillDailyMessages();
 				fillBatches();
