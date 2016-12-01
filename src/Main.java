@@ -129,7 +129,7 @@ public class Main {
 	 * works, needs test
 	 */
 	private static void addValuesToEmptyBraces(){
-		int value = rand.nextInt(1);
+		int value = rand.nextInt(10);
 		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, teamid));
 	}
 
