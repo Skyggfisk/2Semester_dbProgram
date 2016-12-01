@@ -235,20 +235,20 @@ public class AddValuesToDB {
 		return "true";
 	}
 	
-	public static int getCurrentTeamId(long currentTime){
+	public static int getCurrentTeamId(long currentTime, DBSingleConnection dbSinCon){
 		PreparedStatement statement = null;
-		String query = "DECLARE @time BIGINT = ?; SELECT team, id FROM teamtimetable WHERE (starttimestamp < @time AND @time < endtimestamp)";
+		String query = "DECLARE @time BIGINT = ?; IF EXISTS (SELECT id FROM teamtimetable WHERE (starttimestamp < @time AND @time < endtimestamp)) SELECT id FROM teamtimetable WHERE (starttimestamp < @time AND @time < endtimestamp) ELSE SELECT id FROM teamtimetable WHERE endtimestamp > @time-(14400000) AND endtimestamp < @time";
 		ResultSet result = null;
 		int teamId = 0;
 		Connection con = null;
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			con = dbSinCon.getDBcon();
 			con.setAutoCommit(true);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, currentTime);
 			result = statement.executeQuery();
 			result.next();
-			teamId = result.getInt("team");
+			teamId = result.getInt("id");
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -256,7 +256,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.getInstance().closeConnection();
+				dbSinCon.closeConnection();
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 				e.printStackTrace();

@@ -15,14 +15,6 @@ public class Main extends Application{
 		launch(args);
 	}
 	private DBSingleConnection dbSinCon = new DBSingleConnection();
-	
-	public static int getTeamid() {
-		return WorkingTeam.getInstance().getTeamId();
-	}
-
-	public static void setTeamid(int teamid) {
-		WorkingTeam.getInstance().setTeamId(teamid);
-	}
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	static Date time = new Date();
@@ -79,7 +71,7 @@ public class Main extends Application{
 	private static void addValuesToSlaughterAmount(DBSingleConnection dbSinCon) {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(100000) + 50000;
-		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, getTeamid(), time.getTime(), dbSinCon));
+		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamId(), time.getTime(), dbSinCon));
 	}
 	
 	private static void fillBatches() {
@@ -119,7 +111,8 @@ public class Main extends Application{
 	 */
 	private static void addValuesToEmptyBraces(DBSingleConnection dbSinCon){
 		int value = rand.nextInt(10);
-		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, getTeamid(), dbSinCon));
+		System.out.println("value: " + value + " team id: " + WorkingTeam.getInstance().getTeamId());
+		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, WorkingTeam.getInstance().getTeamId(), dbSinCon));
 	}
 
 	/**
@@ -128,7 +121,7 @@ public class Main extends Application{
 	private static void addValuesToSpeed(DBSingleConnection dbSinCon) {
 		int targetval = 13000;
 		int speedval = rand.nextInt(5) + 13000;
-		if(AddValuesToDB.getOrganic(getTeamid())){
+		if(AddValuesToDB.getOrganic(WorkingTeam.getInstance().getTeamId())){
 			targetval = 6000;
 			speedval = rand.nextInt(5) + 6000;
 		}
@@ -138,8 +131,10 @@ public class Main extends Application{
 	/**
 	 * think it works..
 	 */
-	private static void getTeamId() {
-		setTeamid(AddValuesToDB.getCurrentTeamId(time.getTime()));
+	private static void getTeamId(DBSingleConnection connection) {
+		int val = AddValuesToDB.getCurrentTeamId(time.getTime(), connection);
+		System.out.println("stuff" + val);
+		WorkingTeam.getInstance().setTeamId(val);
 	}
 
 	/**
@@ -242,7 +237,7 @@ public class Main extends Application{
 						addValuesToSpeed(dbSinCon);
 						break;
 					case 4:
-						getTeamId();
+						getTeamId(dbSinCon);
 						break;
 					default:
 						return "did not do work";
@@ -261,18 +256,19 @@ public class Main extends Application{
 	 */
 	@Override
 	public void start(Stage arg0) throws Exception {
+		getTeamId(dbSinCon);
 		fillProductionStop();
 		fillDailyMessages();
 		fillBatches();
 		fillTeams();
 		fillTimeTable();
-		//addValuesToEmptyBraces();
-		//addValuesToSlaughterAmount();
-		//addValuesToSpeed();
-		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
 		startWorker(60, 1);
 		startWorker(60, 2);
 		startWorker(60, 3);
 		startWorker(60, 4);
+		//addValuesToEmptyBraces();
+		//addValuesToSlaughterAmount();
+		//addValuesToSpeed();
+		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
 	}
 }
