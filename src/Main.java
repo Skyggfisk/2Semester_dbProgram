@@ -21,7 +21,7 @@ public class Main extends Application{
 	static Random rand = new Random();
 
 	/**
-	 * good stuff
+	 * works
 	 */
 	private static void fillTimeTable() {
 		//1480278600000 sunday 20.30	// 1480305600000 monday 04.00 // nightteam
@@ -46,6 +46,11 @@ public class Main extends Application{
 		printToSQLFile(tmpString, "TeamTimeTable");
 	}
 
+	/**
+	 * works
+	 * @param tmpString
+	 * @param filename
+	 */
 	private static void printToSQLFile(String tmpString, String filename) {
 		try {
 			filename += ".sql";
@@ -57,6 +62,9 @@ public class Main extends Application{
 		}
 	}
 
+	/**
+	 * works
+	 */
 	private static void fillTeams() {
 		String tmpString = databasename;
 		tmpString += System.lineSeparator() + " INSERT INTO team (teamname, workers, department) VALUES ('nat', 46, 1);";
@@ -65,8 +73,7 @@ public class Main extends Application{
 	}
 
 	/**
-	 * works? needs test
-	 * @param dbSinCon2 
+	 * works? test. 
 	 */
 	private static void addValuesToSlaughterAmount(DBSingleConnection dbSinCon) {
 		int batchnr = rand.nextInt(10) + 1;
@@ -107,7 +114,7 @@ public class Main extends Application{
 	}
 	
 	/**
-	 * works, needs test
+	 * works? test.
 	 */
 	private static void addValuesToEmptyBraces(DBSingleConnection dbSinCon){
 		int value = rand.nextInt(10);
@@ -128,7 +135,7 @@ public class Main extends Application{
 	}
 	
 	/**
-	 * think it works..
+	 * works
 	 */
 	private static void getTeamId(DBSingleConnection connection) {
 		int val = AddValuesToDB.getCurrentTeamId(time.getTime(), connection);
@@ -136,7 +143,7 @@ public class Main extends Application{
 	}
 
 	/**
-	 * works (check timestamps) TODO
+	 * works
 	 */
 	private static void fillDailyMessages() {
 		long dayend = 1480334400000L;
@@ -163,7 +170,7 @@ public class Main extends Application{
 	}
 
 	/**
-	 * works (check timestamps) TODO
+	 * works
 	 */
 	public static void fillProductionStop(){
 		long dayend = 1480334400000L;
