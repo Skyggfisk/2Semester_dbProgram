@@ -111,7 +111,6 @@ public class Main extends Application{
 	 */
 	private static void addValuesToEmptyBraces(DBSingleConnection dbSinCon){
 		int value = rand.nextInt(10);
-		System.out.println("value: " + value + " team id: " + WorkingTeam.getInstance().getTeamId());
 		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, WorkingTeam.getInstance().getTeamId(), dbSinCon));
 	}
 
@@ -133,7 +132,6 @@ public class Main extends Application{
 	 */
 	private static void getTeamId(DBSingleConnection connection) {
 		int val = AddValuesToDB.getCurrentTeamId(time.getTime(), connection);
-		System.out.println("stuff" + val);
 		WorkingTeam.getInstance().setTeamId(val);
 	}
 
@@ -246,7 +244,6 @@ public class Main extends Application{
 				}
 			};
 		}
-    	
     }
 
 
@@ -262,13 +259,10 @@ public class Main extends Application{
 		fillBatches();
 		fillTeams();
 		fillTimeTable();
+		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
 		startWorker(60, 1);
 		startWorker(60, 2);
 		startWorker(60, 3);
 		startWorker(60, 4);
-		//addValuesToEmptyBraces();
-		//addValuesToSlaughterAmount();
-		//addValuesToSpeed();
-		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
 	}
 }

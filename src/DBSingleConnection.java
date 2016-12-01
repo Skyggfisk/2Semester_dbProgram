@@ -59,7 +59,6 @@ public class DBSingleConnection {
 	{
 		while (inuse) {
 			try {
-				System.out.println("I'm waiting");
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
