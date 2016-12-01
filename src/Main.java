@@ -123,7 +123,7 @@ public class Main extends Application{
 	}
 
 	/**
-	 * change according to batch / eco ... TODO
+	 * works? test.
 	 */
 	private static void addValuesToSpeed(DBSingleConnection dbSinCon) {
 		int targetval = 13000;
