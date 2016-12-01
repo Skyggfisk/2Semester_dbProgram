@@ -1,6 +1,8 @@
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javafx.application.Application;
 import javafx.concurrent.ScheduledService;
@@ -16,6 +18,8 @@ public class Main extends Application{
 	}
 	private DBSingleConnection dbSinCon = new DBSingleConnection();
 
+	private static int iterations = 83;
+
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	static Date time = new Date();
 	static Random rand = new Random();
@@ -30,7 +34,7 @@ public class Main extends Application{
 		long oneday = 86400000L;
 		long nightstart = 1480278600000L; long nightend = 1480305600000L;
 		long daystart = 1480305600000L; long dayend = 1480334400000L;
-		for (int i = 0; i < 83; i++) { 
+		for (int i = 0; i < iterations; i++) { 
 				int day = i%7;
 				if(day == 5 ||day == 6){
 					//tmpString += System.lineSeparator() + " sunday or saturday";
@@ -86,7 +90,7 @@ public class Main extends Application{
 		long nightend = 1480305600000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
-		for (int i = 0; i < 83; i++) {
+		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 ||day == 6){
 				//tmpString += System.lineSeparator() + " sunday or saturday";
@@ -149,7 +153,7 @@ public class Main extends Application{
 		long dayend = 1480334400000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
-		for (int i = 0; i < 83; i++) {
+		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 || day == 6){
 				//do nothing (saturday / sunday)
@@ -176,7 +180,7 @@ public class Main extends Application{
 		long dayend = 1480334400000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
-		for (int i = 0; i < 83; i++) {
+		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 || day == 6){
 				//do nothing (saturday / sunday)
@@ -260,16 +264,36 @@ public class Main extends Application{
 	 */
 	@Override
 	public void start(Stage arg0) throws Exception {
+		 Parameters parameters = getParameters ();
+
+		Map<String, String> namedParameters = parameters.getNamed();
+		Set<String> keys = namedParameters.keySet();
+		for (String myKeys : keys) {
+			String value = namedParameters.get(myKeys);
+			switch (myKeys) {
+			case "iterations":
+				setIterations(value);
+				break;
+			case "runsingletimes":
+				fillProductionStop();
+				fillDailyMessages();
+				fillBatches();
+				fillTeams();
+				fillTimeTable();
+				break;
+			default:
+				break;
+			}
+		}
 		getTeamId(dbSinCon);
-		fillProductionStop();
-		fillDailyMessages();
-		fillBatches();
-		fillTeams();
-		fillTimeTable();
 		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
 		startWorker(60, 1);
 		startWorker(60, 2);
 		startWorker(60, 3);
 		startWorker(60, 4);
+	}
+
+	private void setIterations(String value) {
+		this.iterations  = Integer.parseInt(value);
 	}
 }
