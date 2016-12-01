@@ -17,13 +17,13 @@ public class Main {
 	static Date time = new Date();
 	static Random rand = new Random();
 	public static void main(String[] args) {
-			//fillProductionStop();
-			//fillDailyMessages();
+			fillProductionStop();
+			fillDailyMessages();
 			fillBatches();
 			fillTeams();
 			fillTimeTable();
 			addValuesToEmptyBraces();
-		//}
+			addValuesToSlaughterAmount();
 		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed
 		//startWorker(60, 1);
 		//startWorker(60, 2);
@@ -74,6 +74,9 @@ public class Main {
 		printToSQLFile(tmpString, "Teams");
 	}
 
+	/**
+	 * working on it ...
+	 */
 	private static void addValuesToSlaughterAmount() {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(100000) + 50000;
@@ -113,10 +116,13 @@ public class Main {
 		printToSQLFile(tmpString, "Batches");
 	}
 	
+	/**
+	 * works, check timestamps TODO
+	 */
 	private static void addValuesToEmptyBraces(){
 		int value = rand.nextInt(1);
-		int teamid = rand.nextInt(2); //fix
-		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(value, teamid));
+		int teamIDint = rand.nextInt(1)+1;
+		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, teamIDint));
 	}
 
 	private static void addValuesToSpeed() {
@@ -125,29 +131,56 @@ public class Main {
 	}
 
 	/**
-	 * one time run, needs work
+	 * works (check timestamps) TODO
 	 */
 	private static void fillDailyMessages() {
-		for (int i = 0; i < 4; i++) { // fix amount to ????
-			long stoptime = rand.nextLong();
-			String dmessage = "my message" + stoptime;
-			System.out.println("daily messages: " + AddValuesToDB.addValuesDailyMessage(dmessage, time.getTime(), time.getTime()+100000, time.getTime()+10000));	
+		long dayend = 1480334400000L;
+		long oneday = 86400000L;
+		String tmpString = databasename;
+		for (int i = 0; i < 83; i++) {
+			int day = i%7;
+			if(day == 5 || day == 6){
+				//do nothing (saturday / sunday)
+			} else{
+				for (int j = 0; j < rand.nextInt(5)+1; j++) {
+					int stoptime = rand.nextInt(200);
+					String dmessage = "my message" + stoptime;
+					long creationTime = dayend-3600000;
+					long expireTime = dayend+oneday;
+					long showTime = dayend-(oneday/2);
+					tmpString += System.lineSeparator() + "INSERT INTO dailymessages (dmessage, dtimestamp, expire, showdate) VALUES ('" + dmessage + "', " + creationTime + ", " + expireTime + ", " + showTime + ");";
+				}
+			}
+			dayend += oneday;
 		}
-		printToSQLFile(null, null);
+		
+		printToSQLFile(tmpString, "DailyMessages");
 	}
 
 	/**
-	 * one time run, needs work
+	 * works (check timestamps) TODO
 	 */
 	public static void fillProductionStop(){
-		for (int i = 0; i < 4; i++) {
-			long stoptime = rand.nextLong();
-			String stopdescription = "something happened" + stoptime;
-			int stoplength = rand.nextInt(2) + 1;
-			int teamid = rand.nextInt(1);
-			System.out.println("production stop: " + AddValuesToDB.addValuesProductionStop(stoptime, stoplength, stopdescription, teamid));
+		long dayend = 1480334400000L;
+		long oneday = 86400000L;
+		String tmpString = databasename;
+		for (int i = 0; i < 83; i++) {
+			int day = i%7;
+			if(day == 5 || day == 6){
+				//do nothing (saturday / sunday)
+			} else {
+				for (int j = 0; j < rand.nextInt(5)+1; j++) {
+					long stoptimeOffSet = rand.nextInt(3600000) * (rand.nextInt(4) + 1);
+					long stoptime = dayend - stoptimeOffSet;
+					String stopdescription = "Something Broke at time: " + stoptimeOffSet;
+					int stoplength = rand.nextInt(2) + 1;
+					String teamid = "SELECT id FROM teamtimetable WHERE endtimestamp = " + dayend;
+					tmpString += System.lineSeparator() + "INSERT INTO productionstop (stoptime, stoplength, stopdescription, teamid) VALUES (" + stoptime + ", " + stoplength + ", '" + stopdescription + "', (" + teamid + "));";
+				}
+			}
+			dayend += oneday;
 		}
-		printToSQLFile(null, null);
+		printToSQLFile(tmpString, "ProductionStops");
 	}
 	
     /**
