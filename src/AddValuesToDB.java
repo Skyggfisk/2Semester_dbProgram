@@ -12,7 +12,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			con = DBConnection.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setInt(1, value);
@@ -39,7 +39,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			con = DBConnection.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setInt(1, value);
@@ -72,7 +72,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			con = DBConnection.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setInt(1, value);
@@ -101,7 +101,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			con = DBConnection.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, stoptime);
@@ -129,7 +129,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			con = DBConnection.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setString(1, dmessage);
@@ -157,7 +157,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			con = DBConnection.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, timestamp);
@@ -185,7 +185,8 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			DBConnection.getInstance();
+			con = DBConnection.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, starttimestamp);
@@ -213,7 +214,8 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			DBConnection.getInstance();
+			con = DBConnection.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setString(1, teamname);
@@ -264,5 +266,44 @@ public class AddValuesToDB {
 			}
 		}
 		return teamId;
+	}
+	
+	public static boolean getOrganic(int currentTeam){
+		PreparedStatement statement = null;
+		String query = "SELECT * FROM batch WHERE teamnighttimetableid = ? OR teamdaytimetableid = ?";
+		Connection con = null;
+		ResultSet res = null;
+		Boolean returnval = false;
+		
+		try {
+			DBConnection.getInstance();
+			con = DBConnection.getDBcon();
+			con.setAutoCommit(false);
+			statement = con.prepareStatement(query);
+			statement.setInt(1, currentTeam);
+			statement.setInt(2, currentTeam);
+			res = statement.executeQuery();
+			con.commit();
+			try {
+				while(res.next()){
+					if(res.getBoolean("organic")){
+						returnval = true;
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.setAutoCommit(true);
+				DBConnection.closeConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return returnval;
 	}
 }

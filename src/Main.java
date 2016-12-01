@@ -137,8 +137,13 @@ public class Main {
 	 * change according to batch / eco ...
 	 */
 	private static void addValuesToSpeed() {
+		int targetval = 1000;
 		int speedval = rand.nextInt(1000) + 50;
-		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, 650, time.getTime()));
+		if(AddValuesToDB.getOrganic(teamid)){
+			targetval = 500;
+			speedval = rand.nextInt(500) + 50;
+		}
+		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, targetval, time.getTime()));
 	}
 	
 	/**
