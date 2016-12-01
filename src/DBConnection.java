@@ -53,7 +53,7 @@ public class DBConnection {
 		}
 	}
 	
-	public Connection getDBcon()
+	public static Connection getDBcon()
 	{
 		return con;
 	}

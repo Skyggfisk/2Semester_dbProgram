@@ -1,5 +1,6 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AddValuesToDB {
@@ -76,12 +77,13 @@ public class AddValuesToDB {
 			statement = con.prepareStatement(query);
 			statement.setInt(1, value);
 			statement.setInt(2, batchid);
-			statement.setInt(4, teamid);
 			statement.setLong(3, satimestamp);
-			statement.executeQuery();
+			statement.setInt(4, teamid);
+			statement.executeUpdate();
 			con.commit();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+			e.getStackTrace();
 		} finally {
 			try {
 				con.setAutoCommit(true);
@@ -231,5 +233,36 @@ public class AddValuesToDB {
 			}
 		}
 		return "true";
+	}
+	
+	public static int getCurrentTeamId(long currentTime){
+		
+		PreparedStatement statement = null;
+		String query = "DECLARE @time BIGINT = ?; SELECT team, id FROM teamtimetable WHERE (starttimestamp < @time AND @time < endtimestamp)";
+		ResultSet result = null;
+		int teamId = 0;
+		Connection con = null;
+		try {
+			con = DBConnection.getDBcon();
+			con.setAutoCommit(true);
+			statement = con.prepareStatement(query);
+			statement.setLong(1, currentTime);
+			result = statement.executeQuery();
+			result.next();
+			teamId = result.getInt("team");
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.setAutoCommit(true);
+				DBConnection.closeConnection();
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return teamId;
 	}
 }

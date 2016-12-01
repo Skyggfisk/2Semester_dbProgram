@@ -13,6 +13,15 @@ import javafx.event.EventHandler;
 import javafx.util.Duration;
 
 public class Main {
+	private static int teamid = 0;
+	public static int getTeamid() {
+		return teamid;
+	}
+
+	public static void setTeamid(int teamid) {
+		Main.teamid = teamid;
+	}
+
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	static Date time = new Date();
 	static Random rand = new Random();
@@ -24,10 +33,11 @@ public class Main {
 			fillTimeTable();
 			addValuesToEmptyBraces();
 			addValuesToSlaughterAmount();
-		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed
+		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
 		//startWorker(60, 1);
 		//startWorker(60, 2);
 		//startWorker(60, 3);
+		//startWorker(60, 4);
 	}
 
 	/**
@@ -80,7 +90,6 @@ public class Main {
 	private static void addValuesToSlaughterAmount() {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(100000) + 50000;
-		int teamid = rand.nextInt(2);
 		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, teamid, time.getTime()));
 	}
 	
@@ -117,7 +126,7 @@ public class Main {
 	}
 	
 	/**
-	 * works, check timestamps TODO
+	 * almost works, FIX teamIDint
 	 */
 	private static void addValuesToEmptyBraces(){
 		int value = rand.nextInt(1);
@@ -125,9 +134,19 @@ public class Main {
 		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, teamIDint));
 	}
 
+	/**
+	 * change according to batch / eco ...
+	 */
 	private static void addValuesToSpeed() {
 		int speedval = rand.nextInt(1000) + 50;
 		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, 650, time.getTime()));
+	}
+	
+	/**
+	 * think it works..
+	 */
+	private static void getTeamId() {
+		setTeamid(AddValuesToDB.getCurrentTeamId(time.getTime()));
 	}
 
 	/**
@@ -226,6 +245,9 @@ public class Main {
 						break;
 					case 3:
 						addValuesToSpeed();
+						break;
+					case 4:
+						getTeamId();
 						break;
 					default:
 						return "did not do work";
