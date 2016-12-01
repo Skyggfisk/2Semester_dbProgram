@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 
-public class DBConnection {
+public class DBSingleConnection {
 
 	private static final String server = "kraka.ucn.dk";
 	private static final String databaseName = "UCN_dmaa0216_2Sem_1";
@@ -13,11 +13,14 @@ public class DBConnection {
 	
 	private DatabaseMetaData dma;
 	private static Connection con;
+	private boolean inuse = false;
 	
-	private static DBConnection instance = null;
 	
+	public DBSingleConnection() {
+		
+	}
 	
-	private DBConnection() {
+	private void openConnection() {
 		String connectionString = "jdbc:sqlserver://" + server + ";databaseName=" + databaseName + ";user=" + userName + ";password=" + passWord;
 		
 		try {
@@ -25,8 +28,7 @@ public class DBConnection {
 			//System.out.println("Driver find the driver");
 		} catch (Exception e) {
 			System.out.println("Driver not found");
-			System.out.println(e.getMessage());
-			
+			e.printStackTrace();
 		}
 		
 		try {
@@ -34,29 +36,37 @@ public class DBConnection {
 			con.setAutoCommit(true);
 			dma = con.getMetaData();
 		} catch (Exception e) {
-			System.out.println("Con problem");
-			System.out.println(e.getMessage());
+			System.out.println("Connection problem");
+			e.printStackTrace();
 		}
+
 	}
 	
-	public void closeConnection() {
+	
+	
+	public synchronized void closeConnection() {
 		try {
 			con.close();
-			instance = null;
+			inuse = false;
+			notifyAll();
 		} catch (Exception e) {
 			System.out.println("error");
+			e.printStackTrace();
 		}
 	}
 	
-	public Connection getDBcon()
+	public synchronized Connection getDBcon()
 	{
-		return con;
-	}
-	
-	public static DBConnection getInstance() {
-		if(instance == null){
-			instance = new DBConnection();
+		while (inuse) {
+			try {
+				System.out.println("I'm waiting");
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		return instance;
+		inuse = true;
+		openConnection();
+		return con;
 	}
 }

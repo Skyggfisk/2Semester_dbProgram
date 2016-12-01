@@ -6,26 +6,26 @@ import java.sql.SQLException;
 public class AddValuesToDB {
 
 	
-	public static String addValuesSpeed(int value, int targetvalue, long stimestamp) {
+	public static String addValuesSpeed(int value, int targetvalue, long stimestamp, DBSingleConnection dbSinCon) {
 		PreparedStatement statement = null;
 		String query = "INSERT INTO speed (value, targetvalue, stimestamp) VALUES (?, ?, ?)";
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getDBcon();
+			con = dbSinCon.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setInt(1, value);
 			statement.setInt(2, targetvalue);
 			statement.setLong(3, stimestamp);
-			statement.executeQuery();
+			statement.executeUpdate();
 			con.commit();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				dbSinCon.closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -39,7 +39,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getDBcon();
+			con = DBConnection.getInstance().getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setInt(1, value);
@@ -58,7 +58,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				DBConnection.getInstance().closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -66,13 +66,13 @@ public class AddValuesToDB {
 		return "true";
 	}
 	
-	public static String addValuesSlaughterAmount(int value, int batchid, int teamid, long satimestamp) {
+	public static String addValuesSlaughterAmount(int value, int batchid, int teamid, long satimestamp, DBSingleConnection dbSinCon) {
 		PreparedStatement statement = null;
 		String query = "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (?, ?, ?, ?)";
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getDBcon();
+			con = dbSinCon.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setInt(1, value);
@@ -87,7 +87,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				dbSinCon.closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -101,7 +101,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getDBcon();
+			con = DBConnection.getInstance().getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, stoptime);
@@ -115,7 +115,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				DBConnection.getInstance().closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -129,7 +129,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getDBcon();
+			con = DBConnection.getInstance().getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setString(1, dmessage);
@@ -143,7 +143,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				DBConnection.getInstance().closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -151,13 +151,13 @@ public class AddValuesToDB {
 		return "true";
 	}
 
-	public static String addValuesToEmptyBraces(long timestamp, int value, int teamid) {
+	public static String addValuesToEmptyBraces(long timestamp, int value, int teamid, DBSingleConnection dbSinCon) {
 		PreparedStatement statement = null;
 		String query = "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (?, ?, ?)";
 		Connection con = null;
 		
 		try {
-			con = DBConnection.getDBcon();
+			con = dbSinCon.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, timestamp);
@@ -171,7 +171,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				dbSinCon.closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -185,8 +185,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			DBConnection.getInstance();
-			con = DBConnection.getDBcon();
+			con = DBConnection.getInstance().getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, starttimestamp);
@@ -200,7 +199,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				DBConnection.getInstance().closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -214,8 +213,7 @@ public class AddValuesToDB {
 		Connection con = null;
 		
 		try {
-			DBConnection.getInstance();
-			con = DBConnection.getDBcon();
+			con = DBConnection.getInstance().getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setString(1, teamname);
@@ -229,7 +227,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				DBConnection.getInstance().closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -238,14 +236,13 @@ public class AddValuesToDB {
 	}
 	
 	public static int getCurrentTeamId(long currentTime){
-		
 		PreparedStatement statement = null;
 		String query = "DECLARE @time BIGINT = ?; SELECT team, id FROM teamtimetable WHERE (starttimestamp < @time AND @time < endtimestamp)";
 		ResultSet result = null;
 		int teamId = 0;
 		Connection con = null;
 		try {
-			con = DBConnection.getDBcon();
+			con = DBConnection.getInstance().getDBcon();
 			con.setAutoCommit(true);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, currentTime);
@@ -259,7 +256,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				DBConnection.getInstance().closeConnection();
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 				e.printStackTrace();
@@ -276,8 +273,7 @@ public class AddValuesToDB {
 		Boolean returnval = false;
 		
 		try {
-			DBConnection.getInstance();
-			con = DBConnection.getDBcon();
+			con = DBConnection.getInstance().getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setInt(1, currentTeam);
@@ -299,7 +295,7 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.closeConnection();
+				DBConnection.getInstance().closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

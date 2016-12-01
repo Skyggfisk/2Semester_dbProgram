@@ -1,44 +1,32 @@
 import java.io.PrintWriter;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
-import javax.xml.transform.Templates;
-
+import javafx.application.Application;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class Main {
-	private static int teamid = 0;
+public class Main extends Application{
+	public static void main(String[] args) {
+		launch(args);
+	}
+	private DBSingleConnection dbSinCon = new DBSingleConnection();
+	
 	public static int getTeamid() {
-		return teamid;
+		return WorkingTeam.getInstance().getTeamId();
 	}
 
 	public static void setTeamid(int teamid) {
-		Main.teamid = teamid;
+		WorkingTeam.getInstance().setTeamId(teamid);
 	}
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	static Date time = new Date();
 	static Random rand = new Random();
-	public static void main(String[] args) {
-			fillProductionStop();
-			fillDailyMessages();
-			fillBatches();
-			fillTeams();
-			fillTimeTable();
-			addValuesToEmptyBraces();
-			addValuesToSlaughterAmount();
-		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
-		//startWorker(60, 1);
-		//startWorker(60, 2);
-		//startWorker(60, 3);
-		//startWorker(60, 4);
-	}
 
 	/**
 	 * good stuff
@@ -86,11 +74,12 @@ public class Main {
 
 	/**
 	 * works? needs test
+	 * @param dbSinCon2 
 	 */
-	private static void addValuesToSlaughterAmount() {
+	private static void addValuesToSlaughterAmount(DBSingleConnection dbSinCon) {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(100000) + 50000;
-		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, teamid, time.getTime()));
+		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, getTeamid(), time.getTime(), dbSinCon));
 	}
 	
 	private static void fillBatches() {
@@ -128,22 +117,22 @@ public class Main {
 	/**
 	 * works, needs test
 	 */
-	private static void addValuesToEmptyBraces(){
+	private static void addValuesToEmptyBraces(DBSingleConnection dbSinCon){
 		int value = rand.nextInt(10);
-		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, teamid));
+		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, getTeamid(), dbSinCon));
 	}
 
 	/**
-	 * change according to batch / eco ...
+	 * change according to batch / eco ... TODO
 	 */
-	private static void addValuesToSpeed() {
-		int targetval = 1000;
-		int speedval = rand.nextInt(1000) + 50;
-		if(AddValuesToDB.getOrganic(teamid)){
-			targetval = 500;
-			speedval = rand.nextInt(500) + 50;
+	private static void addValuesToSpeed(DBSingleConnection dbSinCon) {
+		int targetval = 13000;
+		int speedval = rand.nextInt(5) + 13000;
+		if(AddValuesToDB.getOrganic(getTeamid())){
+			targetval = 6000;
+			speedval = rand.nextInt(5) + 6000;
 		}
-		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, targetval, time.getTime()));
+		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, targetval, time.getTime(), dbSinCon));
 	}
 	
 	/**
@@ -209,8 +198,8 @@ public class Main {
     /**
      * @param refreshrate
      */
-    public static void startWorker(int refreshrate, int type){
-    	Worker speedWorker = new Worker(type);
+    public void startWorker(int refreshrate, int type){
+    	Worker speedWorker = new Worker(type, dbSinCon);
     	speedWorker.setPeriod(Duration.seconds(refreshrate));
     	speedWorker.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			
@@ -229,8 +218,10 @@ public class Main {
     
     private static class Worker extends ScheduledService<String> {
     	int type = 0;
-		public Worker(int type) {
+    	DBSingleConnection dbSinCon;
+		public Worker(int type, DBSingleConnection dbSinCon) {
 			this.type = type;
+			this.dbSinCon = dbSinCon;
 		}
 		
 		/**
@@ -242,13 +233,13 @@ public class Main {
 				protected String call(){
 					switch(type){
 					case 1:
-						addValuesToSlaughterAmount();
+						addValuesToSlaughterAmount(dbSinCon);
 						break;
 					case 2:
-						addValuesToEmptyBraces();
+						addValuesToEmptyBraces(dbSinCon);
 						break;
 					case 3:
-						addValuesToSpeed();
+						addValuesToSpeed(dbSinCon);
 						break;
 					case 4:
 						getTeamId();
@@ -262,4 +253,26 @@ public class Main {
 		}
     	
     }
+
+
+    
+    /* (non-Javadoc)
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 */
+	@Override
+	public void start(Stage arg0) throws Exception {
+		fillProductionStop();
+		fillDailyMessages();
+		fillBatches();
+		fillTeams();
+		fillTimeTable();
+		//addValuesToEmptyBraces();
+		//addValuesToSlaughterAmount();
+		//addValuesToSpeed();
+		//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
+		startWorker(60, 1);
+		startWorker(60, 2);
+		startWorker(60, 3);
+		startWorker(60, 4);
+	}
 }
