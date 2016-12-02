@@ -262,6 +262,7 @@ public class AddValuesToDB {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Current team: " + teamId);
 		return teamId;
 	}
 	

@@ -81,8 +81,20 @@ public class Main extends Application{
 	 */
 	private static void addValuesToSlaughterAmount(DBSingleConnection dbSinCon) {
 		int batchnr = rand.nextInt(10) + 1;
-		int slaughtervalue = rand.nextInt(100000) + 50000;
+		int slaughtervalue = rand.nextInt(16) + 200;
+		System.out.println(slaughtervalue);
 		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamId(), time.getTime(), dbSinCon));
+	}
+	
+	private void fillSlaughterAmountTable() {
+		int batchnr = rand.nextInt(10) + 1;
+		int slaughtervalue = rand.nextInt(16) + 200;
+		String tmpString = databasename;
+		for (int i = 0; i < iterations; i++) {
+			
+			
+		}
+		printToSQLFile(tmpString, "");
 	}
 	
 	private static void fillBatches() {
