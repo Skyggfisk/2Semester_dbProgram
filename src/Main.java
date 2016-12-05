@@ -1,3 +1,7 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -97,6 +101,7 @@ public class Main extends Application{
 		long daystart = 1480305600000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
+		BufferedWriter bf = createFile("SlaughterAmount");
 		AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
 		ArrayList<Integer> batch = AddValuesToDB.getBatchId(WorkingTeam.getInstance().getTeamTimeTableId(), dbSinCon);
 		int batchnr = batch.get(0);
@@ -118,16 +123,39 @@ public class Main extends Application{
 						batchvalue = batch.get(1);
 					}
 				}
-				addStringToFileBuffer(tmpString, "SlaughterAmount");
+				addStringToFileBuffer(tmpString, bf);
 			}
 			daystart += oneday;
 		}
-		printToSQLFile(tmpString, "SlaughterAmount");
+		closeFile(bf);
 	}
 	
-	private void addStringToFileBuffer(String tmpString, String filename) {
-		// TODO Auto-generated method stub
-		
+	private BufferedWriter createFile(String filename){
+		FileWriter fw;
+		BufferedWriter bf = null;
+		try {
+			fw = new FileWriter(filename);
+			bf = new BufferedWriter(fw);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		return bf;
+	}
+	
+	private void addStringToFileBuffer(String tmpString, BufferedWriter bf) {
+			try {
+					bf.write(tmpString);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
+	
+	private void closeFile(BufferedWriter bf){
+		try {
+			bf.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -137,6 +165,7 @@ public class Main extends Application{
 		long daystart = 1480305600000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
+		BufferedWriter bf = createFile("EmptyBraces");
 		AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
@@ -150,11 +179,11 @@ public class Main extends Application{
 					tmpString += System.lineSeparator() + "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (" + starttimestamp + ", " + value + ", " + WorkingTeam.getInstance().getTeamTimeTableId() + ");";
 					AddValuesToDB.getCurrentTeamId(starttimestamp, dbSinCon);
 				}
-				addStringToFileBuffer(tmpString, "EmptyBraces");
+				addStringToFileBuffer(tmpString, bf);
 			}
 			daystart += oneday;
 		}
-		printToSQLFile(tmpString, "EmptyBraces");
+		closeFile(bf);
 	}
 	
 	public void fillSpeed(){
@@ -162,6 +191,7 @@ public class Main extends Application{
 		long oneday = 86400000L;
 		int targetval = 13000;
 		String tmpString = databasename;
+		BufferedWriter bf = createFile("Speed");
 		AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
@@ -179,11 +209,11 @@ public class Main extends Application{
 					tmpString += System.lineSeparator() + "INSERT INTO speed (value, targetvalue, stimestamp) VALUES (" + speedval + ", " + targetval + ", " + stimestamp + ");";
 					AddValuesToDB.getCurrentTeamId(stimestamp, dbSinCon);
 				}
-				addStringToFileBuffer(tmpString, "Speed");
+				addStringToFileBuffer(tmpString, bf);
 			}
 			daystart += oneday;
 		}
-		printToSQLFile(tmpString, "Speed");
+		closeFile(bf);
 	}
 	
 	private static void fillBatches() {
