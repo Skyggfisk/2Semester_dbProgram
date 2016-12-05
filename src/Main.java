@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javafx.application.Application;
 import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
@@ -90,7 +91,7 @@ public class Main extends Application{
 	}
 	
 	/**
-	 * adds 39.000 lines to a SQL file. watch out ...
+	 * WARNING: adds 39.000 lines to a SQL file..
 	 */
 	private void fillSlaughterAmountTable() {
 		long daystart = 1480305600000L;
@@ -117,12 +118,18 @@ public class Main extends Application{
 						batchvalue = batch.get(1);
 					}
 				}
+				addStringToFileBuffer(tmpString, "SlaughterAmount");
 			}
 			daystart += oneday;
 		}
 		printToSQLFile(tmpString, "SlaughterAmount");
 	}
 	
+	private void addStringToFileBuffer(String tmpString, String filename) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	/**
 	 * WARNING: creates 39.000 lines of SQL ...
 	 */
@@ -141,12 +148,42 @@ public class Main extends Application{
 					int value = rand.nextInt(10);
 					AddValuesToDB.getCurrentTeamId(starttimestamp, dbSinCon);
 					tmpString += System.lineSeparator() + "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (" + starttimestamp + ", " + value + ", " + WorkingTeam.getInstance().getTeamTimeTableId() + ");";
-					AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
+					AddValuesToDB.getCurrentTeamId(starttimestamp, dbSinCon);
 				}
+				addStringToFileBuffer(tmpString, "EmptyBraces");
 			}
 			daystart += oneday;
 		}
 		printToSQLFile(tmpString, "EmptyBraces");
+	}
+	
+	public void fillSpeed(){
+		long daystart = 1480305600000L;
+		long oneday = 86400000L;
+		int targetval = 13000;
+		String tmpString = databasename;
+		AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
+		for (int i = 0; i < iterations; i++) {
+			int day = i%7;
+			if(day == 5 ||day == 6){
+				//tmpString += System.lineSeparator() + " sunday or saturday";
+			} else {
+				for (int j = 0; j < 480; j++) {
+					Long stimestamp = daystart + (j * 60000L);
+					int speedval = rand.nextInt(5) + 13000;
+					if(AddValuesToDB.getOrganic(WorkingTeam.getInstance().getTeamTimeTableId(),dbSinCon)){
+						targetval = 6000;
+						speedval = rand.nextInt(5) + 6000;
+					}
+					AddValuesToDB.getCurrentTeamId(stimestamp, dbSinCon);
+					tmpString += System.lineSeparator() + "INSERT INTO speed (value, targetvalue, stimestamp) VALUES (" + speedval + ", " + targetval + ", " + stimestamp + ");";
+					AddValuesToDB.getCurrentTeamId(stimestamp, dbSinCon);
+				}
+				addStringToFileBuffer(tmpString, "Speed");
+			}
+			daystart += oneday;
+		}
+		printToSQLFile(tmpString, "Speed");
 	}
 	
 	private static void fillBatches() {
@@ -343,7 +380,48 @@ public class Main extends Application{
 				fillBatches();
 				fillTeams();
 				fillTimeTable();
-				fillSlaughterAmountTable();
+				new Service<String>() {
+
+					@Override
+					protected Task<String> createTask() {
+						return new Task<String>() {
+
+							@Override
+							protected String call() throws Exception {
+								fillSlaughterAmountTable();
+								return "Filled Slaughter";
+							}
+						};
+					}
+				};
+				new Service<String>() {
+
+					@Override
+					protected Task<String> createTask() {
+						return new Task<String>() {
+
+							@Override
+							protected String call() throws Exception {
+								fillEmptyBraces();
+								return "Filled empty braces";
+							}
+						};
+					}
+				};
+				new Service<String>() {
+
+					@Override
+					protected Task<String> createTask() {
+						return new Task<String>() {
+
+							@Override
+							protected String call() throws Exception {
+								fillSpeed();
+								return "filled speed";
+							}
+						};
+					}
+				};
 				break;
 			default:
 				break;
