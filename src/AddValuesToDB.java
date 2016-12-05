@@ -2,6 +2,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class AddValuesToDB {
 
@@ -235,20 +236,28 @@ public class AddValuesToDB {
 		return "true";
 	}
 	
-	public static int getCurrentTeamId(long currentTime, DBSingleConnection dbSinCon){
+	public static void getCurrentTeamId(long currentTime, DBSingleConnection dbSinCon){
 		PreparedStatement statement = null;
-		String query = "DECLARE @time BIGINT = ?; IF EXISTS (SELECT id FROM teamtimetable WHERE (starttimestamp < @time AND @time < endtimestamp)) SELECT id FROM teamtimetable WHERE (starttimestamp < @time AND @time < endtimestamp) ELSE SELECT id FROM teamtimetable WHERE endtimestamp > @time-(14400000) AND endtimestamp < @time";
-		ResultSet result = null;
+		String query = "SELECT TOP 1 id, starttimestamp, endtimestamp, team FROM teamtimetable WHERE ? BETWEEN starttimestamp AND endtimestamp";
+		ResultSet result = null;		
+		int teamTimeTableId = 0;
+		long startTime = 0;
+		long endTime = 0;
 		int teamId = 0;
 		Connection con = null;
 		try {
 			con = dbSinCon.getDBcon();
-			con.setAutoCommit(true);
 			statement = con.prepareStatement(query);
 			statement.setLong(1, currentTime);
 			result = statement.executeQuery();
-			result.next();
-			teamId = result.getInt("id");
+			
+			if(result.isBeforeFirst()){
+				result.next();
+				teamTimeTableId = result.getInt("id");
+				startTime = result.getLong("starttimestamp");
+				endTime = result.getLong("endtimestamp");
+				teamId = result.getInt("team");
+			}
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -262,11 +271,10 @@ public class AddValuesToDB {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Current team: " + teamId);
-		return teamId;
+		WorkingTeam.getInstance().setEverything(teamId, teamTimeTableId, startTime, endTime);
 	}
 	
-	public static boolean getOrganic(int currentTeam){
+	public static boolean getOrganic(int currentTeam, DBSingleConnection dbSinCon){
 		PreparedStatement statement = null;
 		String query = "SELECT * FROM batch WHERE teamnighttimetableid = ? OR teamdaytimetableid = ?";
 		Connection con = null;
@@ -274,7 +282,7 @@ public class AddValuesToDB {
 		Boolean returnval = false;
 		
 		try {
-			con = DBConnection.getInstance().getDBcon();
+			con = dbSinCon.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			statement.setInt(1, currentTeam);
@@ -296,11 +304,50 @@ public class AddValuesToDB {
 		} finally {
 			try {
 				con.setAutoCommit(true);
-				DBConnection.getInstance().closeConnection();
+				dbSinCon.closeConnection();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 		return returnval;
+	}
+	
+	public static ArrayList<Integer> getBatchId(int teamtimetableid, DBSingleConnection dbSinCon){
+		PreparedStatement statement = null;
+		String query = "SELECT TOP 1 id, value FROM batch WHERE teamnighttimetableid = ? OR teamdaytimetableid = ?";
+		Connection con = null;
+		ResultSet res = null;
+		ArrayList<Integer> result = new ArrayList<>();
+		int value = 0;
+		int id = 0;
+		
+		try {
+			con = dbSinCon.getDBcon();
+			con.setAutoCommit(false);
+			statement = con.prepareStatement(query);
+			statement.setInt(1, teamtimetableid);
+			statement.setInt(2, teamtimetableid);
+			res = statement.executeQuery();
+			con.commit();
+			if(res.isBeforeFirst()){
+				res.next();
+				id = res.getInt("id");
+				value = res.getInt("value");
+				result.add(id);
+				result.add(value);
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.setAutoCommit(true);
+				dbSinCon.closeConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
 	}
 }

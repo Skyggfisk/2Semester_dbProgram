@@ -1,4 +1,5 @@
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
@@ -12,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+@SuppressWarnings("static-access")
 public class Main extends Application{
 	public static void main(String[] args) {
 		launch(args);
@@ -79,22 +81,72 @@ public class Main extends Application{
 	/**
 	 * works? test. 
 	 */
+	
 	private static void addValuesToSlaughterAmount(DBSingleConnection dbSinCon) {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(16) + 200;
-		System.out.println(slaughtervalue);
-		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamId(), time.getTime(), dbSinCon));
+		System.out.println(WorkingTeam.getInstance().getTeamTimeTableId());
+		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamTimeTableId(), time.getTime(), dbSinCon));
 	}
 	
+	/**
+	 * adds 39.000 lines to a SQL file. watch out ...
+	 */
 	private void fillSlaughterAmountTable() {
-		int batchnr = rand.nextInt(10) + 1;
-		int slaughtervalue = rand.nextInt(16) + 200;
+		long daystart = 1480305600000L;
+		long oneday = 86400000L;
 		String tmpString = databasename;
+		AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
+		ArrayList<Integer> batch = AddValuesToDB.getBatchId(WorkingTeam.getInstance().getTeamTimeTableId(), dbSinCon);
+		int batchnr = batch.get(0);
+		int batchvalue = batch.get(1);
 		for (int i = 0; i < iterations; i++) {
-			
-			
+			int day = i%7;
+			if(day == 5 ||day == 6){
+				//tmpString += System.lineSeparator() + " sunday or saturday";
+			} else {
+				for (int j = 0; j < 480; j++) {
+					int slaughtervalue = rand.nextInt(16) + 200;
+					Long satimestamp = daystart + (j * 60000L);
+					AddValuesToDB.getCurrentTeamId(satimestamp, dbSinCon);
+					tmpString += System.lineSeparator() + "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (" + slaughtervalue + ", " + batchnr + ", " + satimestamp + ", " + WorkingTeam.getInstance().getTeamTimeTableId() + ");";
+					batchvalue -= slaughtervalue;
+					if(batchvalue < 1){
+						batch = AddValuesToDB.getBatchId(WorkingTeam.getInstance().getTeamTimeTableId(), dbSinCon);
+						batchnr = batch.get(0);
+						batchvalue = batch.get(1);
+					}
+				}
+			}
+			daystart += oneday;
 		}
-		printToSQLFile(tmpString, "");
+		printToSQLFile(tmpString, "SlaughterAmount");
+	}
+	
+	/**
+	 * WARNING: creates 39.000 lines of SQL ...
+	 */
+	public void fillEmptyBraces(){
+		long daystart = 1480305600000L;
+		long oneday = 86400000L;
+		String tmpString = databasename;
+		AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
+		for (int i = 0; i < iterations; i++) {
+			int day = i%7;
+			if(day == 5 ||day == 6){
+				//tmpString += System.lineSeparator() + " sunday or saturday";
+			} else {
+				for (int j = 0; j < 480; j++) {
+					Long starttimestamp = daystart + (j * 60000L);
+					int value = rand.nextInt(10);
+					AddValuesToDB.getCurrentTeamId(starttimestamp, dbSinCon);
+					tmpString += System.lineSeparator() + "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (" + starttimestamp + ", " + value + ", " + WorkingTeam.getInstance().getTeamTimeTableId() + ");";
+					AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
+				}
+			}
+			daystart += oneday;
+		}
+		printToSQLFile(tmpString, "EmptyBraces");
 	}
 	
 	private static void fillBatches() {
@@ -113,7 +165,7 @@ public class Main extends Application{
 						organic = rand.nextBoolean();
 					}
 					Long timeofslaughter = dayend - 150000;
-					int batchnr = rand.nextInt(10) + 1;
+					int batchnr = j + 1 + i + i*j;
 					String farmer = "lars" + rand.nextInt(10);
 					int batchvalue = rand.nextInt(10000) + 10000;
 					int housenr = rand.nextInt(10) + 1;
@@ -134,7 +186,7 @@ public class Main extends Application{
 	 */
 	private static void addValuesToEmptyBraces(DBSingleConnection dbSinCon){
 		int value = rand.nextInt(10);
-		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, WorkingTeam.getInstance().getTeamId(), dbSinCon));
+		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, WorkingTeam.getInstance().getTeamTimeTableId(), dbSinCon));
 	}
 
 	/**
@@ -143,7 +195,7 @@ public class Main extends Application{
 	private static void addValuesToSpeed(DBSingleConnection dbSinCon) {
 		int targetval = 13000;
 		int speedval = rand.nextInt(5) + 13000;
-		if(AddValuesToDB.getOrganic(WorkingTeam.getInstance().getTeamId())){
+		if(AddValuesToDB.getOrganic(WorkingTeam.getInstance().getTeamTimeTableId(),dbSinCon)){
 			targetval = 6000;
 			speedval = rand.nextInt(5) + 6000;
 		}
@@ -154,8 +206,7 @@ public class Main extends Application{
 	 * works
 	 */
 	private static void getTeamId(DBSingleConnection connection) {
-		int val = AddValuesToDB.getCurrentTeamId(time.getTime(), connection);
-		WorkingTeam.getInstance().setTeamId(val);
+		AddValuesToDB.getCurrentTeamId(time.getTime(), connection);
 	}
 
 	/**
@@ -292,6 +343,7 @@ public class Main extends Application{
 				fillBatches();
 				fillTeams();
 				fillTimeTable();
+				fillSlaughterAmountTable();
 				break;
 			default:
 				break;
