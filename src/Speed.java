@@ -1,22 +1,28 @@
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Speed implements Runnable {
-	private DBSingleConnection dbSinCon = new DBSingleConnection();
+	private DBSingleConnection dbSinCon;
 	private int iterations = 83;
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
+	private ArrayList<Integer> teamids;
+	private ArrayList<String> records = new ArrayList<>();
+	
+	public Speed(DBSingleConnection dbSinCon, ArrayList<Integer> teamids){
+		this.dbSinCon = dbSinCon;
+		this.teamids = teamids;
+	}
 
 	public void fillSpeed(){
 		long daystart = 1480305600000L;
 		long oneday = 86400000L;
 		int targetval = 13000;
 		String tmpString = databasename;
-		BufferedWriter bf = createFile("Speed");
-		AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 ||day == 6){
@@ -26,49 +32,33 @@ public class Speed implements Runnable {
 					System.out.println("Speed: " + i);
 					Long stimestamp = daystart + (j * 60000L);
 					int speedval = rand.nextInt(5) + 13000;
-					if(AddValuesToDB.getOrganic(WorkingTeam.getInstance().getTeamTimeTableId(),dbSinCon)){
+					if(AddValuesToDB.getOrganic(teamids.get(i+j),dbSinCon)){
 						targetval = 6000;
 						speedval = rand.nextInt(5) + 6000;
 					}
-					AddValuesToDB.getCurrentTeamId(stimestamp, dbSinCon);
 					tmpString += System.lineSeparator() + "INSERT INTO speed (value, targetvalue, stimestamp) VALUES (" + speedval + ", " + targetval + ", " + stimestamp + ");";
+					records.add(tmpString);
+					tmpString = "";
 				}
-				addStringToFileBuffer(tmpString, bf);
-				tmpString = "";
 			}
 			daystart += oneday;
 		}
-		closeFile(bf);
+		writeToFile(records, "Speed");
 	}
-	
-	private BufferedWriter createFile(String filename){
-		FileWriter fw;
-		BufferedWriter bf = null;
+
+	private void writeToFile(ArrayList<String> records, String fileName){
+		File file = new File(fileName, ".sql");
 		try {
-			fw = new FileWriter(filename);
-			bf = new BufferedWriter(fw);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		return bf;
-	}
-	
-	private void addStringToFileBuffer(String tmpString, BufferedWriter bf) {
-			try {
-				bf.write(tmpString);
-			} catch (IOException e) {
-				e.printStackTrace();
+			FileWriter fw = new FileWriter(file);
+			for (String record : records) {
+				fw.write(record);
 			}
-	}
-	
-	private void closeFile(BufferedWriter bf){
-		try {
-			bf.close();
+			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public void run() {
 		fillSpeed();

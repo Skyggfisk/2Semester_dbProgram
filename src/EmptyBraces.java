@@ -1,21 +1,25 @@
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class EmptyBraces implements Runnable{
-	private DBSingleConnection dbSinCon = new DBSingleConnection();
 	private int iterations = 83;
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
+	private ArrayList<Integer> teamids;
+	private ArrayList<String> records = new ArrayList<>();
+	
+	public EmptyBraces(ArrayList<Integer> teamids){
+		this.teamids = teamids;
+	}
 
 	public void fillEmptyBraces(){
 		long daystart = 1480305600000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
-		BufferedWriter bf = createFile("EmptyBraces");
-		AddValuesToDB.getCurrentTeamId(daystart, dbSinCon);
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 ||day == 6){
@@ -25,41 +29,24 @@ public class EmptyBraces implements Runnable{
 					System.out.println("EB: " + i);
 					Long starttimestamp = daystart + (j * 60000L);
 					int value = rand.nextInt(10);
-					AddValuesToDB.getCurrentTeamId(starttimestamp, dbSinCon);
-					tmpString += System.lineSeparator() + "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (" + starttimestamp + ", " + value + ", " + WorkingTeam.getInstance().getTeamTimeTableId() + ");";
-					AddValuesToDB.getCurrentTeamId(starttimestamp, dbSinCon);
+					tmpString += System.lineSeparator() + "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (" + starttimestamp + ", " + value + ", " + teamids.get(i+j) + ");";
+					records.add(tmpString);
+					tmpString = "";
 				}
-				addStringToFileBuffer(tmpString, bf);
-				tmpString = "";
 			}
 			daystart += oneday;
 		}
-		closeFile(bf);
+		writeToFile(records, "EmptyBraces");
 	}
 	
-	private BufferedWriter createFile(String filename){
-		FileWriter fw;
-		BufferedWriter bf = null;
+	private void writeToFile(ArrayList<String> records, String fileName){
+		File file = new File(fileName, ".sql");
 		try {
-			fw = new FileWriter(filename);
-			bf = new BufferedWriter(fw);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		return bf;
-	}
-	
-	private void addStringToFileBuffer(String tmpString, BufferedWriter bf) {
-			try {
-				bf.write(tmpString);
-			} catch (IOException e) {
-				e.printStackTrace();
+			FileWriter fw = new FileWriter(file);
+			for (String record : records) {
+				fw.write(record);
 			}
-	}
-	
-	private void closeFile(BufferedWriter bf){
-		try {
-			bf.close();
+			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -407,10 +407,10 @@ public class Main extends Application{
 				setIterations(value);
 				break;
 			case "runsingletime":
-				
-				new Thread(new SlaughterAmount()).start();
-				new Thread(new Speed()).start();
-				new Thread(new EmptyBraces()).start();
+				ArrayList<Integer> teamids = prepareArray();
+				new Thread(new SlaughterAmount(dbSinCon, teamids)).start();
+				new Thread(new Speed(dbSinCon, teamids)).start();
+				new Thread(new EmptyBraces(teamids)).start();
 				fillProductionStop();
 				fillDailyMessages();
 				fillBatches();
@@ -426,13 +426,33 @@ public class Main extends Application{
 			
 		}else{
 			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
-			startWorker(60, 1);
-			startWorker(60, 2);
-			startWorker(60, 3);
-			startWorker(60, 4);
+			//startWorker(60, 1);
+			//startWorker(60, 2);
+			//startWorker(60, 3);
+			//startWorker(60, 4);
 		}
 		
 
+	}
+
+	private ArrayList<Integer> prepareArray() {
+		ArrayList<Integer> teamidList = new ArrayList<>();
+		long daystart = 1480305600000L;
+		long oneday = 86400000L;
+		for (int i = 0; i < iterations; i++) {
+			int day = i%7;
+			if(day == 5 ||day == 6){
+				//tmpString += System.lineSeparator() + " sunday or saturday";
+			} else {
+				for (int j = 0; j < 480; j++) {
+					Long satimestamp = daystart + (j * 60000L);
+					AddValuesToDB.getCurrentTeamId(satimestamp, dbSinCon);
+					teamidList.add(WorkingTeam.getInstance().getTeamTimeTableId());
+				}
+			}
+			daystart += oneday;
+		}
+		return teamidList;
 	}
 
 	private void setIterations(String value) {
