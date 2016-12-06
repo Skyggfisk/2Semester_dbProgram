@@ -6,16 +6,17 @@ import java.util.Random;
 
 public class SlaughterAmount implements Runnable {
 	private DBSingleConnection dbSinCon;
-	private int iterations = 83;
+	private int iterations = Main.getIterations();
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	private ArrayList<Integer> teamids;
-	private ArrayList<String> records = new ArrayList<>(teamids.size());
+	private ArrayList<String> records;
 	private int k = 0;
 	
 	public SlaughterAmount(DBSingleConnection dbSinCon, ArrayList<Integer> teamids){
 		this.dbSinCon = dbSinCon;
 		this.teamids = teamids;
+		records = new ArrayList<>(teamids.size());
 	}
 
 	private void fillSlaughterAmountTable() {

@@ -1,7 +1,3 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +7,6 @@ import java.util.Set;
 
 import javafx.application.Application;
 import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
@@ -25,7 +20,7 @@ public class Main extends Application{
 	}
 	private DBSingleConnection dbSinCon = new DBSingleConnection();
 
-	private static int iterations = 83;
+	private static int iterations = 2;
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	static Date time = new Date();
@@ -334,5 +329,9 @@ public class Main extends Application{
 
 	private void setIterations(String value) {
 		this.iterations  = Integer.parseInt(value);
+	}
+	
+	public static int getIterations(){
+		return iterations;
 	}
 }

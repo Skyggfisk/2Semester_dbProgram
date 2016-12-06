@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class EmptyBraces implements Runnable{
-	private int iterations = 83;
+	private int iterations = Main.getIterations();
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	private ArrayList<Integer> teamids;
-	private ArrayList<String> records = new ArrayList<>(teamids.size());
+	private ArrayList<String> records;
 	private int k = 0;
 	
 	public EmptyBraces(ArrayList<Integer> teamids){
 		this.teamids = teamids;
+		records = new ArrayList<>(teamids.size());
 	}
 
 	public void fillEmptyBraces(){
