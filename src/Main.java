@@ -124,6 +124,7 @@ public class Main extends Application{
 					}
 				}
 				addStringToFileBuffer(tmpString, bf);
+				tmpString = "";
 			}
 			daystart += oneday;
 		}
@@ -144,7 +145,7 @@ public class Main extends Application{
 	
 	private void addStringToFileBuffer(String tmpString, BufferedWriter bf) {
 			try {
-					bf.write(tmpString);
+				bf.write(tmpString);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -180,6 +181,7 @@ public class Main extends Application{
 					AddValuesToDB.getCurrentTeamId(starttimestamp, dbSinCon);
 				}
 				addStringToFileBuffer(tmpString, bf);
+				tmpString = "";
 			}
 			daystart += oneday;
 		}
@@ -207,9 +209,9 @@ public class Main extends Application{
 					}
 					AddValuesToDB.getCurrentTeamId(stimestamp, dbSinCon);
 					tmpString += System.lineSeparator() + "INSERT INTO speed (value, targetvalue, stimestamp) VALUES (" + speedval + ", " + targetval + ", " + stimestamp + ");";
-					AddValuesToDB.getCurrentTeamId(stimestamp, dbSinCon);
 				}
 				addStringToFileBuffer(tmpString, bf);
+				tmpString = "";
 			}
 			daystart += oneday;
 		}
@@ -405,17 +407,11 @@ public class Main extends Application{
 				setIterations(value);
 				break;
 			case "runsingletime":
-				fillProductionStop();
-				fillDailyMessages();
-				fillBatches();
-				fillTeams();
-				fillTimeTable();
+				
 				new Service<String>() {
-
 					@Override
 					protected Task<String> createTask() {
 						return new Task<String>() {
-
 							@Override
 							protected String call() throws Exception {
 								fillSlaughterAmountTable();
@@ -425,7 +421,6 @@ public class Main extends Application{
 					}
 				};
 				new Service<String>() {
-
 					@Override
 					protected Task<String> createTask() {
 						return new Task<String>() {
@@ -439,7 +434,6 @@ public class Main extends Application{
 					}
 				};
 				new Service<String>() {
-
 					@Override
 					protected Task<String> createTask() {
 						return new Task<String>() {
@@ -452,6 +446,11 @@ public class Main extends Application{
 						};
 					}
 				};
+				fillProductionStop();
+				fillDailyMessages();
+				fillBatches();
+				fillTeams();
+				fillTimeTable();
 				break;
 			default:
 				break;
