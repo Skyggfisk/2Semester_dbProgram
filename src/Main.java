@@ -408,44 +408,9 @@ public class Main extends Application{
 				break;
 			case "runsingletime":
 				
-				new Service<String>() {
-					@Override
-					protected Task<String> createTask() {
-						return new Task<String>() {
-							@Override
-							protected String call() throws Exception {
-								fillSlaughterAmountTable();
-								return "Filled Slaughter";
-							}
-						};
-					}
-				};
-				new Service<String>() {
-					@Override
-					protected Task<String> createTask() {
-						return new Task<String>() {
-
-							@Override
-							protected String call() throws Exception {
-								fillEmptyBraces();
-								return "Filled empty braces";
-							}
-						};
-					}
-				};
-				new Service<String>() {
-					@Override
-					protected Task<String> createTask() {
-						return new Task<String>() {
-
-							@Override
-							protected String call() throws Exception {
-								fillSpeed();
-								return "filled speed";
-							}
-						};
-					}
-				};
+				new Thread(new SlaughterAmount()).start();
+				new Thread(new Speed()).start();
+				new Thread(new EmptyBraces()).start();
 				fillProductionStop();
 				fillDailyMessages();
 				fillBatches();
