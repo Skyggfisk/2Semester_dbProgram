@@ -312,7 +312,7 @@ public class Main extends Application{
 	}
 
 	private ArrayList<Integer> prepareArray() {
-		ArrayList<Integer> teamidList = new ArrayList<>();
+		ArrayList<Integer> teamidList = new ArrayList<>(iterations);
 		long daystart = 1480305600000L;
 		long oneday = 86400000L;
 		for (int i = 0; i < iterations; i++) {

@@ -10,7 +10,8 @@ public class Speed implements Runnable {
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	private ArrayList<Integer> teamids;
-	private ArrayList<String> records = new ArrayList<>();
+	private ArrayList<String> records = new ArrayList<>(teamids.size());
+	private int k = 0;
 	
 	public Speed(DBSingleConnection dbSinCon, ArrayList<Integer> teamids){
 		this.dbSinCon = dbSinCon;
@@ -31,13 +32,14 @@ public class Speed implements Runnable {
 					System.out.println("Speed: " + i);
 					Long stimestamp = daystart + (j * 60000L);
 					int speedval = rand.nextInt(5) + 13000;
-					if(AddValuesToDB.getOrganic(teamids.get(i+j),dbSinCon)){
+					if(AddValuesToDB.getOrganic(teamids.get(k),dbSinCon)){
 						targetval = 6000;
 						speedval = rand.nextInt(5) + 6000;
 					}
 					tmpString += System.lineSeparator() + "INSERT INTO speed (value, targetvalue, stimestamp) VALUES (" + speedval + ", " + targetval + ", " + stimestamp + ");";
 					records.add(tmpString);
 					tmpString = "";
+					k++;
 				}
 			}
 			daystart += oneday;

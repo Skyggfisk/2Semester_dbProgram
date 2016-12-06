@@ -9,7 +9,8 @@ public class EmptyBraces implements Runnable{
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	private ArrayList<Integer> teamids;
-	private ArrayList<String> records = new ArrayList<>();
+	private ArrayList<String> records = new ArrayList<>(teamids.size());
+	private int k = 0;
 	
 	public EmptyBraces(ArrayList<Integer> teamids){
 		this.teamids = teamids;
@@ -28,9 +29,10 @@ public class EmptyBraces implements Runnable{
 					System.out.println("EB: " + i);
 					Long starttimestamp = daystart + (j * 60000L);
 					int value = rand.nextInt(10);
-					tmpString += System.lineSeparator() + "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (" + starttimestamp + ", " + value + ", " + teamids.get(i+j) + ");";
+					tmpString += System.lineSeparator() + "INSERT INTO emptybraces (starttimestamp, value, teamtimetableid) VALUES (" + starttimestamp + ", " + value + ", " + teamids.get(k) + ");";
 					records.add(tmpString);
 					tmpString = "";
+					k++;
 				}
 			}
 			daystart += oneday;

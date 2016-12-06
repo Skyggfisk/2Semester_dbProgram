@@ -10,7 +10,8 @@ public class SlaughterAmount implements Runnable {
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	private ArrayList<Integer> teamids;
-	private ArrayList<String> records = new ArrayList<>();
+	private ArrayList<String> records = new ArrayList<>(teamids.size());
+	private int k = 0;
 	
 	public SlaughterAmount(DBSingleConnection dbSinCon, ArrayList<Integer> teamids){
 		this.dbSinCon = dbSinCon;
@@ -33,8 +34,7 @@ public class SlaughterAmount implements Runnable {
 					System.out.println("SA: " + i);
 					int slaughtervalue = rand.nextInt(16) + 200;
 					Long satimestamp = daystart + (j * 60000L);
-					int teamtimetableid = teamids.get(i+j);
-					AddValuesToDB.getCurrentTeamId(satimestamp, dbSinCon);
+					int teamtimetableid = teamids.get(k);
 					tmpString += System.lineSeparator() + "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (" + slaughtervalue + ", " + batchnr + ", " + satimestamp + ", " + teamtimetableid + ");";
 					records.add(tmpString);
 					tmpString = "";
@@ -44,6 +44,7 @@ public class SlaughterAmount implements Runnable {
 						batchnr = batch.get(0);
 						batchvalue = batch.get(1);
 					}
+					k++;
 				}
 			}
 			daystart += oneday;
