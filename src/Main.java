@@ -335,8 +335,34 @@ public class Main extends Application{
 		this.iterations  = Integer.parseInt(value);
 	}
 	
+	public void test(){
+		long timestamp = 123;
+		long beforeTimStamp = 0;
+		long oneday = 1;
+		int day = 0;
+		for (int i = 0; i < ; i++) {
+			if( timeofslaughter != beforeTimStamp){
+				timestamp = timeofslaughter;
+				beforeTimStamp = timeofslaughter;
+			}
+	
+			for(int i = 0; i < whatever; i++){
+				if(timestamp > endtimestmap){
+					teamid = teamdaytimetableid
+				}else{
+					teamid teamnighttimetalbeid
+				}
+				timestamp += 1min;
+				string = "INSERT INTO slaughter (value)";
+				
+			}
+			
+		}
+		
+
 	public static int getIterations(){
 		return iterations;
+
 	}
 
 	public static String getPathname() {
