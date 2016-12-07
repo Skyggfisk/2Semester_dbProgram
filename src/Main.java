@@ -1,4 +1,5 @@
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
@@ -12,13 +13,14 @@ import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+@SuppressWarnings("static-access")
 public class Main extends Application{
 	public static void main(String[] args) {
 		launch(args);
 	}
 	private DBSingleConnection dbSinCon = new DBSingleConnection();
 
-	private static int iterations = 83;
+	private static int iterations = 2;
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	static Date time = new Date();
@@ -79,22 +81,12 @@ public class Main extends Application{
 	/**
 	 * works? test. 
 	 */
+	
 	private static void addValuesToSlaughterAmount(DBSingleConnection dbSinCon) {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(16) + 200;
-		System.out.println(slaughtervalue);
-		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamId(), time.getTime(), dbSinCon));
-	}
-	
-	private void fillSlaughterAmountTable() {
-		int batchnr = rand.nextInt(10) + 1;
-		int slaughtervalue = rand.nextInt(16) + 200;
-		String tmpString = databasename;
-		for (int i = 0; i < iterations; i++) {
-			
-			
-		}
-		printToSQLFile(tmpString, "");
+		System.out.println(WorkingTeam.getInstance().getTeamTimeTableId());
+		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamTimeTableId(), time.getTime(), dbSinCon));
 	}
 	
 	private static void fillBatches() {
@@ -113,7 +105,7 @@ public class Main extends Application{
 						organic = rand.nextBoolean();
 					}
 					Long timeofslaughter = dayend - 150000;
-					int batchnr = rand.nextInt(10) + 1;
+					int batchnr = j + 1 + i + i*j;
 					String farmer = "lars" + rand.nextInt(10);
 					int batchvalue = rand.nextInt(10000) + 10000;
 					int housenr = rand.nextInt(10) + 1;
@@ -134,7 +126,7 @@ public class Main extends Application{
 	 */
 	private static void addValuesToEmptyBraces(DBSingleConnection dbSinCon){
 		int value = rand.nextInt(10);
-		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, WorkingTeam.getInstance().getTeamId(), dbSinCon));
+		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, WorkingTeam.getInstance().getTeamTimeTableId(), dbSinCon));
 	}
 
 	/**
@@ -143,7 +135,7 @@ public class Main extends Application{
 	private static void addValuesToSpeed(DBSingleConnection dbSinCon) {
 		int targetval = 13000;
 		int speedval = rand.nextInt(5) + 13000;
-		if(AddValuesToDB.getOrganic(WorkingTeam.getInstance().getTeamId())){
+		if(AddValuesToDB.getOrganic(WorkingTeam.getInstance().getTeamTimeTableId(),dbSinCon)){
 			targetval = 6000;
 			speedval = rand.nextInt(5) + 6000;
 		}
@@ -154,8 +146,7 @@ public class Main extends Application{
 	 * works
 	 */
 	private static void getTeamId(DBSingleConnection connection) {
-		int val = AddValuesToDB.getCurrentTeamId(time.getTime(), connection);
-		WorkingTeam.getInstance().setTeamId(val);
+		AddValuesToDB.getCurrentTeamId(time.getTime(), connection);
 	}
 
 	/**
@@ -287,6 +278,10 @@ public class Main extends Application{
 				setIterations(value);
 				break;
 			case "runsingletime":
+				ArrayList<Integer> teamids = prepareArray();
+				new Thread(new SlaughterAmount(dbSinCon, teamids)).start();
+				new Thread(new Speed(dbSinCon, teamids)).start();
+				new Thread(new EmptyBraces(teamids)).start();
 				fillProductionStop();
 				fillDailyMessages();
 				fillBatches();
@@ -302,13 +297,34 @@ public class Main extends Application{
 			
 		}else{
 			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
-			startWorker(60, 1);
-			startWorker(60, 2);
-			startWorker(60, 3);
-			startWorker(60, 4);
+			//startWorker(60, 1);
+			//startWorker(60, 2);
+			//startWorker(60, 3);
+			//startWorker(60, 4);
 		}
 		
 
+	}
+
+	private ArrayList<Integer> prepareArray() {
+		ArrayList<Integer> teamidList = new ArrayList<>(iterations);
+		long daystart = 1480305600000L;
+		long oneday = 86400000L;
+		for (int i = 0; i < iterations; i++) {
+			int day = i%7;
+			if(day == 5 ||day == 6){
+				//tmpString += System.lineSeparator() + " sunday or saturday";
+			} else {
+				for (int j = 0; j < 480; j++) {
+					System.out.println("prep: " + i);
+					Long satimestamp = daystart + (j * 60000L);
+					AddValuesToDB.getCurrentTeamId(satimestamp, dbSinCon);
+					teamidList.add(WorkingTeam.getInstance().getTeamTimeTableId());
+				}
+			}
+			daystart += oneday;
+		}
+		return teamidList;
 	}
 
 	private void setIterations(String value) {
@@ -339,5 +355,9 @@ public class Main extends Application{
 			
 		}
 		
+
+	public static int getIterations(){
+		return iterations;
+
 	}
 }
