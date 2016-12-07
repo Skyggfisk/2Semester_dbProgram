@@ -33,12 +33,14 @@ public class SlaughterAmount implements Runnable {
 					teamid =  slaughterArr.get(i).getTeamnighttimetableid();
 				}
 				timestamp += oneminute;
-				tmpString += System.lineSeparator() + "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (" + slaughterArr.get(i).getValue() + ", " + slaughterArr.get(i).getId() + ", " + timestamp + ", " + teamid + ");";
+				tmpString += System.lineSeparator() + "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (" + (slaughterArr.get(i).getOrganic() ? 88 : 212) + ", " + slaughterArr.get(i).getId() + ", " + timestamp + ", " + teamid + ");";
 				records.add(tmpString);
+				System.out.println("SA: " + i +" " + j + " timestamp: " + timestamp);
 				tmpString = "";
 			}
 		}
 		writeToFile(records, "Slaughter");
+		System.out.println("done!");
 	}
 	
 	private void writeToFile(ArrayList<String> records, String fileName){

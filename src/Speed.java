@@ -15,7 +15,7 @@ public class Speed implements Runnable {
 	}
 
 	public void fillSpeed(){
-		long daystart = 1480305600000L;
+		long nightstart = 1480278600000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
 		for (int i = 0; i < iterations; i++) {
@@ -23,15 +23,15 @@ public class Speed implements Runnable {
 			if(day == 5 ||day == 6){
 				//tmpString += System.lineSeparator() + " sunday or saturday";
 			} else {
-				for (int j = 0; j < 480; j++) {
+				for (int j = 0; j < 930; j++) {
 					System.out.println("Speed: " + i);
-					Long stimestamp = daystart + (j * 60000L);
+					Long stimestamp = nightstart + (j * 60000L);
 					tmpString += System.lineSeparator() + "DECLARE @id INT = (SELECT TOP 1 id FROM teamtimetable WHERE " + stimestamp + " BETWEEN starttimestamp AND endtimestamp); IF (SELECT organic FROM batch WHERE teamnighttimetableid = @id OR teamdaytimetableid = @id) = 1 INSERT INTO speed (value, targetvalue, stimestamp) VALUES (6000, 6000, " + stimestamp + "); ELSE INSERT INTO speed (value, targetvalue, stimestamp) VALUES (13000, 13000, " + stimestamp + ");";
 					records.add(tmpString);
 					tmpString = "";
 				}
 			}
-			daystart += oneday;
+			nightstart += oneday;
 		}
 		writeToFile(records, "Speed");
 	}

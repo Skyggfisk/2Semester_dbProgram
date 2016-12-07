@@ -1,16 +1,17 @@
 
 public class SlaughterAmountModel {
 
-	private int numOfMinBatch, value, teamdaytimetableid, teamnighttimetableid, organic, id;
+	private int numOfMinBatch, value, teamdaytimetableid, teamnighttimetableid, id;
+	boolean organic;
 	private long starttimestamp, endtimestamp;
 	
-	public SlaughterAmountModel(long endtimestamp, int numOfMinBatch, int value, int teamdaytimetableid, int teamnighttimetableid, int organic, int id, long starttimestamp) {
+	public SlaughterAmountModel(long endtimestamp, int numOfMinBatch, int value, int teamdaytimetableid, int teamnighttimetableid, boolean i, int id, long starttimestamp) {
 		this.endtimestamp = endtimestamp;
 		this.numOfMinBatch = numOfMinBatch;
 		this.value = value;
 		this.teamdaytimetableid = teamdaytimetableid;
 		this.teamnighttimetableid = teamnighttimetableid;
-		this.organic = organic;
+		this.organic = i;
 		this.id = id;
 		this.starttimestamp = starttimestamp;
 	}
@@ -39,10 +40,10 @@ public class SlaughterAmountModel {
 	public void setTeamnighttimetableid(int teamnighttimetableid) {
 		this.teamnighttimetableid = teamnighttimetableid;
 	}
-	public int getOrganic() {
+	public boolean getOrganic() {
 		return organic;
 	}
-	public void setOrganic(int organic) {
+	public void setOrganic(boolean organic) {
 		this.organic = organic;
 	}
 	public int getId() {

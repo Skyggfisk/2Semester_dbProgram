@@ -356,11 +356,11 @@ public class AddValuesToDB {
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
 			res = statement.executeQuery();
-			if(res.isBeforeFirst()){
-				res.next();
-				SlaughterAmountModel something = new SlaughterAmountModel(res.getLong("endtimestamp"), res.getInt("iterations"), res.getInt("value"), res.getInt("teamdaytimetableid"), res.getInt("teamnighttimetableid"), res.getInt("organic"), res.getInt("id"), res.getInt("startimestamp"));
-				result.add(something);
-			}
+			while (res.next()) {
+					SlaughterAmountModel something = new SlaughterAmountModel(res.getLong("endtimestamp"), res.getInt("iterations"), res.getInt("value"), res.getInt("teamdaytimetableid"), res.getInt("teamnighttimetableid"), res.getBoolean("organic"), res.getInt("id"), res.getLong("starttimestamp"));
+					result.add(something);
+				}
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();

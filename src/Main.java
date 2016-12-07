@@ -20,7 +20,7 @@ public class Main extends Application{
 	}
 	private DBSingleConnection dbSinCon = new DBSingleConnection();
 
-	private static int iterations = 2;
+	private static int iterations = 83;
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	private static String pathname = "C:\\Users\\the_b\\git\\2Semester_dbProgram\\";
