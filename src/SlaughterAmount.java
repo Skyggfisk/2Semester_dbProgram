@@ -9,21 +9,19 @@ public class SlaughterAmount implements Runnable {
 	private int iterations = Main.getIterations();
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
-	private ArrayList<Integer> teamids;
 	private ArrayList<String> records;
-	private int k = 0;
 	
-	public SlaughterAmount(DBSingleConnection dbSinCon, ArrayList<Integer> teamids){
+	public SlaughterAmount(DBSingleConnection dbSinCon){
 		this.dbSinCon = dbSinCon;
-		this.teamids = teamids;
-		records = new ArrayList<>(teamids.size());
+		records = new ArrayList<>(Main.getIterations()*480);
 	}
 
 	private void fillSlaughterAmountTable() {
 		long daystart = 1480305600000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
-		ArrayList<Integer> batch = AddValuesToDB.getBatchId(teamids.get(0), dbSinCon);
+		String teamtimetablesql = "(SELECT TOP 1 id FROM teamtimetable WHERE " + daystart + " BETWEEN starttimestamp AND endtimestamp)";
+		ArrayList<Integer> batch = AddValuesToDB.getBatchId(teamtimetablesql, dbSinCon);
 		int batchnr = batch.get(0);
 		int batchvalue = batch.get(1);
 		for (int i = 0; i < iterations; i++) {
@@ -35,17 +33,16 @@ public class SlaughterAmount implements Runnable {
 					System.out.println("SA: " + i);
 					int slaughtervalue = rand.nextInt(16) + 200;
 					Long satimestamp = daystart + (j * 60000L);
-					int teamtimetableid = teamids.get(k);
-					tmpString += System.lineSeparator() + "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (" + slaughtervalue + ", " + batchnr + ", " + satimestamp + ", " + teamtimetableid + ");";
+					teamtimetablesql = "(SELECT TOP 1 id FROM teamtimetable WHERE " + satimestamp + " BETWEEN starttimestamp AND endtimestamp)";
+					tmpString += System.lineSeparator() + "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (" + slaughtervalue + ", " + batchnr + ", " + satimestamp + ", " + teamtimetablesql + ");";
 					records.add(tmpString);
 					tmpString = "";
 					batchvalue -= slaughtervalue;
 					if(batchvalue < 1){
-						batch = AddValuesToDB.getBatchId(teamtimetableid, dbSinCon);
+						batch = AddValuesToDB.getBatchId(teamtimetablesql, dbSinCon);
 						batchnr = batch.get(0);
 						batchvalue = batch.get(1);
 					}
-					k++;
 				}
 			}
 			daystart += oneday;
@@ -54,7 +51,7 @@ public class SlaughterAmount implements Runnable {
 	}
 	
 	private void writeToFile(ArrayList<String> records, String fileName){
-		File file = new File(fileName, ".sql");
+		File file = new File(Main.getPathname() + fileName +".sql");
 		try {
 			FileWriter fw = new FileWriter(file);
 			for (String record : records) {

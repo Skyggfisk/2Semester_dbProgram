@@ -5,24 +5,18 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Speed implements Runnable {
-	private DBSingleConnection dbSinCon;
 	private int iterations = Main.getIterations();
 	Random rand = new Random();
 	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
-	private ArrayList<Integer> teamids;
 	private ArrayList<String> records;
-	private int k = 0;
 	
-	public Speed(DBSingleConnection dbSinCon, ArrayList<Integer> teamids){
-		this.dbSinCon = dbSinCon;
-		this.teamids = teamids;
-		records = new ArrayList<>(teamids.size());
+	public Speed(){
+		records = new ArrayList<>(Main.getIterations()*480);
 	}
 
 	public void fillSpeed(){
 		long daystart = 1480305600000L;
 		long oneday = 86400000L;
-		int targetval = 13000;
 		String tmpString = databasename;
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
@@ -32,15 +26,9 @@ public class Speed implements Runnable {
 				for (int j = 0; j < 480; j++) {
 					System.out.println("Speed: " + i);
 					Long stimestamp = daystart + (j * 60000L);
-					int speedval = rand.nextInt(5) + 13000;
-					if(AddValuesToDB.getOrganic(teamids.get(k),dbSinCon)){
-						targetval = 6000;
-						speedval = rand.nextInt(5) + 6000;
-					}
-					tmpString += System.lineSeparator() + "INSERT INTO speed (value, targetvalue, stimestamp) VALUES (" + speedval + ", " + targetval + ", " + stimestamp + ");";
+					tmpString += System.lineSeparator() + "DECLARE @id INT = (SELECT TOP 1 id FROM teamtimetable WHERE " + stimestamp + " BETWEEN starttimestamp AND endtimestamp); IF (SELECT organic FROM batch WHERE teamnighttimetableid = @id OR teamdaytimetableid = @id) = 1 INSERT INTO speed (value, targetvalue, stimestamp) VALUES (6000, 6000, " + stimestamp + "); ELSE INSERT INTO speed (value, targetvalue, stimestamp) VALUES (13000, 13000, " + stimestamp + ");";
 					records.add(tmpString);
 					tmpString = "";
-					k++;
 				}
 			}
 			daystart += oneday;
@@ -49,7 +37,7 @@ public class Speed implements Runnable {
 	}
 
 	private void writeToFile(ArrayList<String> records, String fileName){
-		File file = new File(fileName, ".sql");
+		File file = new File(Main.getPathname() + fileName +".sql");
 		try {
 			FileWriter fw = new FileWriter(file);
 			for (String record : records) {

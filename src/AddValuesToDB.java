@@ -274,9 +274,9 @@ public class AddValuesToDB {
 		WorkingTeam.getInstance().setEverything(teamId, teamTimeTableId, startTime, endTime);
 	}
 	
-	public static boolean getOrganic(int currentTeam, DBSingleConnection dbSinCon){
+	public static boolean getOrganic(String currentTeam, DBSingleConnection dbSinCon){
 		PreparedStatement statement = null;
-		String query = "SELECT * FROM batch WHERE teamnighttimetableid = ? OR teamdaytimetableid = ?";
+		String query = "DECLARE @id INT = " + currentTeam + "; SELECT * FROM batch WHERE teamnighttimetableid = @id OR teamdaytimetableid = @id";
 		Connection con = null;
 		ResultSet res = null;
 		Boolean returnval = false;
@@ -285,10 +285,7 @@ public class AddValuesToDB {
 			con = dbSinCon.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
-			statement.setInt(1, currentTeam);
-			statement.setInt(2, currentTeam);
 			res = statement.executeQuery();
-			con.commit();
 			try {
 				while(res.next()){
 					if(res.getBoolean("organic")){
@@ -312,9 +309,9 @@ public class AddValuesToDB {
 		return returnval;
 	}
 	
-	public static ArrayList<Integer> getBatchId(int teamtimetableid, DBSingleConnection dbSinCon){
+	public static ArrayList<Integer> getBatchId(String teamtimetableid, DBSingleConnection dbSinCon){
 		PreparedStatement statement = null;
-		String query = "SELECT TOP 1 id, value FROM batch WHERE teamnighttimetableid = ? OR teamdaytimetableid = ?";
+		String query = "DECLARE @id INT = " + teamtimetableid + "; SELECT TOP 1 id, value FROM batch WHERE teamnighttimetableid = @id OR teamdaytimetableid = @id";
 		Connection con = null;
 		ResultSet res = null;
 		ArrayList<Integer> result = new ArrayList<>();
@@ -325,10 +322,7 @@ public class AddValuesToDB {
 			con = dbSinCon.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
-			statement.setInt(1, teamtimetableid);
-			statement.setInt(2, teamtimetableid);
 			res = statement.executeQuery();
-			con.commit();
 			if(res.isBeforeFirst()){
 				res.next();
 				id = res.getInt("id");
@@ -347,7 +341,6 @@ public class AddValuesToDB {
 				e.printStackTrace();
 			}
 		}
-		
 		return result;
 	}
 }

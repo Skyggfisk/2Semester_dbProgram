@@ -23,6 +23,7 @@ public class Main extends Application{
 	private static int iterations = 2;
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
+	private static String pathname = "C:\\Users\\the_b\\git\\2Semester_dbProgram\\";
 	static Date time = new Date();
 	static Random rand = new Random();
 
@@ -91,6 +92,7 @@ public class Main extends Application{
 	
 	private static void fillBatches() {
 		long dayend = 1480334400000L;
+		Long tos = 1480330800000L;
 		long nightend = 1480305600000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
@@ -104,7 +106,7 @@ public class Main extends Application{
 					if(day == 0 || day == 2){
 						organic = rand.nextBoolean();
 					}
-					Long timeofslaughter = dayend - 150000;
+					Long timeofslaughter = tos;
 					int batchnr = j + 1 + i + i*j;
 					String farmer = "lars" + rand.nextInt(10);
 					int batchvalue = rand.nextInt(10000) + 10000;
@@ -117,6 +119,7 @@ public class Main extends Application{
 			}
 			dayend += oneday;
 			nightend += oneday;
+			tos += oneday;
 		}
 		printToSQLFile(tmpString, "Batches");
 	}
@@ -135,7 +138,8 @@ public class Main extends Application{
 	private static void addValuesToSpeed(DBSingleConnection dbSinCon) {
 		int targetval = 13000;
 		int speedval = rand.nextInt(5) + 13000;
-		if(AddValuesToDB.getOrganic(WorkingTeam.getInstance().getTeamTimeTableId(),dbSinCon)){
+		String teamtimetablesql = "(SELECT TOP 1 id FROM teamtimetable WHERE " + time.getTime() + " BETWEEN starttimestamp AND endtimestamp)";
+		if(AddValuesToDB.getOrganic(teamtimetablesql,dbSinCon)){
 			targetval = 6000;
 			speedval = rand.nextInt(5) + 6000;
 		}
@@ -278,10 +282,10 @@ public class Main extends Application{
 				setIterations(value);
 				break;
 			case "runsingletime":
-				ArrayList<Integer> teamids = prepareArray();
-				new Thread(new SlaughterAmount(dbSinCon, teamids)).start();
-				new Thread(new Speed(dbSinCon, teamids)).start();
-				new Thread(new EmptyBraces(teamids)).start();
+				//ArrayList<Integer> teamids = prepareArray();
+				new Thread(new SlaughterAmount(dbSinCon)).start();
+				new Thread(new Speed()).start();
+				new Thread(new EmptyBraces()).start();
 				fillProductionStop();
 				fillDailyMessages();
 				fillBatches();
@@ -333,5 +337,13 @@ public class Main extends Application{
 	
 	public static int getIterations(){
 		return iterations;
+	}
+
+	public static String getPathname() {
+		return pathname;
+	}
+
+	public static void setPathname(String pathname) {
+		Main.pathname = pathname;
 	}
 }
