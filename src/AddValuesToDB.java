@@ -343,4 +343,35 @@ public class AddValuesToDB {
 		}
 		return result;
 	}
+
+	public static ArrayList<SlaughterAmountModel> getFillSlaughterAmountTable(DBSingleConnection dbSinCon) {
+		PreparedStatement statement = null;
+		String query = "SELECT IIF(organic = 1, value/88, value/212) as iterations, value, teamdaytimetableid, teamnighttimetableid, organic, batch.id, teamtimetable.starttimestamp, teamtimetable.endtimestamp FROM batch join teamtimetable ON teamnighttimetableid = teamtimetable.id";
+		Connection con = null;
+		ResultSet res = null;
+		ArrayList<SlaughterAmountModel> result = new ArrayList<>();
+		
+		try {
+			con = dbSinCon.getDBcon();
+			con.setAutoCommit(false);
+			statement = con.prepareStatement(query);
+			res = statement.executeQuery();
+			if(res.isBeforeFirst()){
+				res.next();
+				SlaughterAmountModel something = new SlaughterAmountModel(res.getLong("endtimestamp"), res.getInt("iterations"), res.getInt("value"), res.getInt("teamdaytimetableid"), res.getInt("teamnighttimetableid"), res.getInt("organic"), res.getInt("id"), res.getInt("startimestamp"));
+				result.add(something);
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				con.setAutoCommit(true);
+				dbSinCon.closeConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
 }
