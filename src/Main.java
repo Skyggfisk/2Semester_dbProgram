@@ -304,6 +304,7 @@ public class Main extends Application{
 				fillBatches();
 				fillTeams();
 				fillTimeTable();
+				fillRefreshRates();
 				break;
 			default:
 				break;
