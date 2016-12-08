@@ -98,7 +98,7 @@ public class Main extends Application{
 		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE information";
 		
 		for (FieldTypes entry : FieldTypes.values()) {
-			tmpString += System.lineSeparator() + "INSERT INTO information(informationname, refreshrate) VALUES (" + entry + ", 10);" + System.lineSeparator() + " GO";
+			tmpString += System.lineSeparator() + "INSERT INTO information(informationname, refreshrate) VALUES ('" + entry + "', " + entry.getRefreshRate() + ");" + System.lineSeparator() + " GO";
 		}
 		printToSQLFile(tmpString, "RefreshRates");
 	}
