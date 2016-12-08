@@ -94,6 +94,15 @@ public class Main extends Application{
 		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamTimeTableId(), time.getTime(), dbSinCon));
 	}
 	
+	private static void fillRefreshRates() {
+		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE information";
+		
+		for (FieldTypes entry : FieldTypes.values()) {
+			tmpString += System.lineSeparator() + "INSERT INTO information(informationname, refreshrate) VALUES (" + entry + ", 10);" + System.lineSeparator() + " GO";
+		}
+		printToSQLFile(tmpString, "RefreshRates");
+	}
+	
 	private static void fillBatches() {
 		long dayend = 1480334400000L;
 		Long tos = 1480330800000L;
