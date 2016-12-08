@@ -77,7 +77,7 @@ public class Main extends Application{
 	 * works
 	 */
 	private static void fillTeams() {
-		String tmpString = databasename;
+		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE team";
 		tmpString += System.lineSeparator() + " INSERT INTO team (teamname, workers, department) VALUES ('nat', 46, 1);";
 		tmpString += System.lineSeparator() + " INSERT INTO team (teamname, workers, department) VALUES ('dag', 50, 1);";
 		printToSQLFile(tmpString, "Teams");
@@ -99,7 +99,7 @@ public class Main extends Application{
 		Long tos = 1480330800000L;
 		long nightend = 1480305600000L;
 		long oneday = 86400000L;
-		String tmpString = databasename;
+		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE batch";
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 ||day == 6){
@@ -163,7 +163,7 @@ public class Main extends Application{
 	private static void fillDailyMessages() {
 		long dayend = 1480334400000L;
 		long oneday = 86400000L;
-		String tmpString = databasename;
+		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE dailymessages";
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 || day == 6){
@@ -190,7 +190,7 @@ public class Main extends Application{
 	public static void fillProductionStop(){
 		long dayend = 1480334400000L;
 		long oneday = 86400000L;
-		String tmpString = databasename;
+		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE productionstop";
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 || day == 6){
@@ -341,7 +341,6 @@ public class Main extends Application{
 
 	public static int getIterations(){
 		return iterations;
-
 	}
 
 	public static String getPathname() {

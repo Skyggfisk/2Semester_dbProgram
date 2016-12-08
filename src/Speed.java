@@ -4,7 +4,7 @@ import java.util.Random;
 public class Speed implements Runnable {
 	private int iterations = Main.getIterations();
 	Random rand = new Random();
-	private String databasename = "USE UCN_dmaa0216_2Sem_1;";
+	private String databasename = "USE UCN_dmaa0216_2Sem_1;" + System.lineSeparator() + "TRUNCATE TABLE speed";
 	private ArrayList<String> records;
 
 	
