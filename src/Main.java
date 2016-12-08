@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,7 +26,7 @@ public class Main extends Application{
 	private static int iterations = 83;
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
-	private static String pathname = "C:\\Users\\the_b\\git\\2Semester_dbProgram\\";
+	private static String pathname = System.getenv("HOMEPATH") + "\\Desktop\\SQLQueries\\";
 	static Date time = new Date();
 	static Random rand = new Random();
 
@@ -42,8 +45,8 @@ public class Main extends Application{
 				if(day == 5 ||day == 6){
 					//tmpString += System.lineSeparator() + " sunday or saturday";
 				} else{
-					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, team) VALUES ("+ daystart +", "+ dayend +" , (SELECT id FROM team WHERE teamname = 'dag' AND department = 1));";
-					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, team) VALUES ("+ nightstart +", "+ nightend +" , (SELECT id FROM team WHERE teamname = 'nat' AND department = 1));";
+					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, teamid) VALUES ("+ daystart +", "+ dayend +" , (SELECT id FROM team WHERE teamname = 'dag' AND department = 1));";
+					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, teamid) VALUES ("+ nightstart +", "+ nightend +" , (SELECT id FROM team WHERE teamname = 'nat' AND department = 1));";
 				}
 				nightstart += oneday;
 				nightend += oneday;
@@ -59,9 +62,10 @@ public class Main extends Application{
 	 * @param filename
 	 */
 	private static void printToSQLFile(String tmpString, String filename) {
+		new File(pathname).mkdirs();
 		try {
 			filename += ".sql";
-			PrintWriter writer = new PrintWriter(filename, "UTF-8");
+			PrintWriter writer = new PrintWriter(pathname + filename, "UTF-8");
 			writer.print(tmpString);
 			writer.close();
 		} catch (Exception e) {
@@ -346,5 +350,19 @@ public class Main extends Application{
 
 	public static void setPathname(String pathname) {
 		Main.pathname = pathname;
+	}
+	
+	public static void writeToFile(ArrayList<String> records, String fileName){
+		new File(pathname).mkdirs();
+		File file = new File(Main.getPathname() + fileName +".sql");
+		try {
+			FileWriter fw = new FileWriter(file);
+			for (String record : records) {
+				fw.write(record);
+			}
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -1,6 +1,3 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -11,7 +8,7 @@ public class EmptyBraces implements Runnable{
 	private ArrayList<String> records;
 	
 	public EmptyBraces(){
-		records = new ArrayList<>(Main.getIterations()*480);
+		records = new ArrayList<>(Main.getIterations()*930);
 	}
 
 	public void fillEmptyBraces(){
@@ -35,20 +32,7 @@ public class EmptyBraces implements Runnable{
 			}
 			nightstart += oneday;
 		}
-		writeToFile(records, "EmptyBraces");
-	}
-	
-	private void writeToFile(ArrayList<String> records, String fileName){
-		File file = new File(Main.getPathname() + fileName +".sql");
-		try {
-			FileWriter fw = new FileWriter(file);
-			for (String record : records) {
-				fw.write(record);
-			}
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Main.writeToFile(records, "EmptyBraces");
 	}
 
 	@Override

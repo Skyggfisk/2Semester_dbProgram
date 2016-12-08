@@ -238,7 +238,7 @@ public class AddValuesToDB {
 	
 	public static void getCurrentTeamId(long currentTime, DBSingleConnection dbSinCon){
 		PreparedStatement statement = null;
-		String query = "SELECT TOP 1 id, starttimestamp, endtimestamp, team FROM teamtimetable WHERE ? BETWEEN starttimestamp AND endtimestamp";
+		String query = "SELECT TOP 1 id, starttimestamp, endtimestamp, teamid FROM teamtimetable WHERE ? BETWEEN starttimestamp AND endtimestamp";
 		ResultSet result = null;		
 		int teamTimeTableId = 0;
 		long startTime = 0;

@@ -1,6 +1,3 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -39,21 +36,8 @@ public class SlaughterAmount implements Runnable {
 				tmpString = "";
 			}
 		}
-		writeToFile(records, "Slaughter");
+		Main.writeToFile(records, "Slaughter");
 		System.out.println("done!");
-	}
-	
-	private void writeToFile(ArrayList<String> records, String fileName){
-		File file = new File(Main.getPathname() + fileName +".sql");
-		try {
-			FileWriter fw = new FileWriter(file);
-			for (String record : records) {
-				fw.write(record);
-			}
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
