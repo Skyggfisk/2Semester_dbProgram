@@ -256,7 +256,7 @@ public class AddValuesToDB {
 				teamTimeTableId = result.getInt("id");
 				startTime = result.getLong("starttimestamp");
 				endTime = result.getLong("endtimestamp");
-				teamId = result.getInt("team");
+				teamId = result.getInt("teamid");
 			}
 			
 		} catch (Exception e) {
