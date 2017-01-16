@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 
 public class DBSingleConnection {
 
-	private static final String server = "kraka.ucn.dk";
+	private static final String server = "aur.dk";
 	private static final String databaseName = "UCN_dmaa0216_2Sem_1";
 	private static final String userName = "UCN_dmaa0216_2Sem_1";
 	private static final String passWord = "Password1!";
