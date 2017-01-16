@@ -315,10 +315,10 @@ public class Main extends Application{
 			
 		}else{
 			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
-			//startWorker(60, 1);
-			//startWorker(60, 2);
-			//startWorker(60, 3);
-			//startWorker(60, 4);
+			startWorker(60, 1);
+			startWorker(60, 2);
+			startWorker(60, 3);
+			startWorker(60, 4);
 		}
 		
 
