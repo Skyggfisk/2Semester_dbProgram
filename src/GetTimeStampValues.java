@@ -22,7 +22,7 @@ public class GetTimeStampValues {
 	
 	public long getTimeStampSpeed(DBSingleConnection dbSinCon){
 		PreparedStatement statement = null;
-		String query = "SELECT * FROM currentspeedview";
+		String query = "SELECT TOP 1 stimestamp FROM speed ORDER BY stimestamp DESC";
 		Connection con = null;
 		ResultSet results = null;
 		long res = 0L;
