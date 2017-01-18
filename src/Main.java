@@ -2,6 +2,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -255,6 +259,7 @@ public class Main extends Application{
 		protected Task<String> createTask() {
 			return new Task<String>() {
 				protected String call(){
+					if(!dataTest(System.currentTimeMillis(),type, dbSinCon, LocalDateTime.now())){
 					switch(type){
 					case 1:
 						addValuesToSlaughterAmount(dbSinCon);
@@ -270,8 +275,10 @@ public class Main extends Application{
 						break;
 					default:
 						return "did not do work";
-					}
+				}
 					return "did some work";
+					}
+					return "not yet";
 				}
 			};
 		}
@@ -373,5 +380,17 @@ public class Main extends Application{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static boolean dataTest(long now, int type, DBSingleConnection dbSinCon, LocalDateTime localdate){
+		long topoflastminute = localdate.withSecond(0).atZone(ZoneId.systemDefault()).toEpochSecond();
+		GetTimeStampValues gtsv = new GetTimeStampValues();
+		long lastentry = gtsv.chooser(type, dbSinCon);
+		long allowedTimeSinceLastMin = 15000;
+		long minimumTimeSinceLastEntry = 60000;
+		if ((now - topoflastminute < allowedTimeSinceLastMin) && (now - lastentry) > minimumTimeSinceLastEntry) {
+			return true;
+		}
+		return false;
 	}
 }
