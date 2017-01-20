@@ -27,7 +27,7 @@ public class Main extends Application{
 	}
 	private DBSingleConnection dbSinCon = new DBSingleConnection();
 
-	private static int iterations = 83;
+	private static int iterations = 9;
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	private static String pathname = System.getenv("HOMEPATH") + "\\Desktop\\SQLQueries\\";
@@ -40,10 +40,13 @@ public class Main extends Application{
 	private static void fillTimeTable() {
 		//1480278600000 sunday 20.30	// 1480305600000 monday 04.00 // nightteam
 		//1480305600000 monday 04.00	// 1480334400000 monday 12.00 // dayteam
+		// 11.01.2017
+		//1484166600000 wednesday 20.30		// 1484193600000 thursday 04.00  // nightteam
+		//1484193600000 thursday 04.00		// 1484222400000 thursday 12.00  // dayteam
 		String tmpString = databasename;
 		long oneday = 86400000L;
-		long nightstart = 1480278600000L; long nightend = 1480305600000L;
-		long daystart = 1480305600000L; long dayend = 1480334400000L;
+		long nightstart = 1484166600000L; long nightend = 1484193600000L;
+		long daystart = 1484193600000L; long dayend = 1484222400000L;
 		for (int i = 0; i < iterations; i++) { 
 				int day = i%7;
 				if(day == 5 ||day == 6){
@@ -81,7 +84,7 @@ public class Main extends Application{
 	 * works
 	 */
 	private static void fillTeams() {
-		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE team";
+		String tmpString = databasename + System.lineSeparator();
 		tmpString += System.lineSeparator() + " INSERT INTO team (teamname, workers, department) VALUES ('nat', 46, 1);";
 		tmpString += System.lineSeparator() + " INSERT INTO team (teamname, workers, department) VALUES ('dag', 50, 1);";
 		printToSQLFile(tmpString, "Teams");
@@ -99,7 +102,7 @@ public class Main extends Application{
 	}
 	
 	private static void fillRefreshRates() {
-		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE information";
+		String tmpString = databasename + System.lineSeparator();
 		
 		for (FieldTypes entry : FieldTypes.values()) {
 			tmpString += System.lineSeparator() + "INSERT INTO information(informationname, refreshrate) VALUES ('" + entry + "', " + entry.getRefreshRate() + ");" + System.lineSeparator() + " GO";
@@ -108,11 +111,11 @@ public class Main extends Application{
 	}
 	
 	private static void fillBatches() {
-		long dayend = 1480334400000L;
-		Long tos = 1480330800000L;
-		long nightend = 1480305600000L;
+		long dayend = 1484222400000L;
+		Long tos = 1484132400000L; // kl. 11
+		long nightend = 1484193600000L;
 		long oneday = 86400000L;
-		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE batch";
+		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 ||day == 6){
@@ -174,9 +177,9 @@ public class Main extends Application{
 	 * works
 	 */
 	private static void fillDailyMessages() {
-		long dayend = 1480334400000L;
+		long dayend = 1484222400000L;
 		long oneday = 86400000L;
-		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE dailymessages";
+		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 || day == 6){
@@ -201,9 +204,9 @@ public class Main extends Application{
 	 * works
 	 */
 	public static void fillProductionStop(){
-		long dayend = 1480334400000L;
+		long dayend = 1484222400000L;
 		long oneday = 86400000L;
-		String tmpString = databasename + System.lineSeparator() + "TRUNCATE TABLE productionstop";
+		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
 			if(day == 5 || day == 6){
@@ -322,10 +325,10 @@ public class Main extends Application{
 			
 		}else{
 			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
-			startWorker(1, 1);
-			startWorker(5, 2);
-			startWorker(10, 3);
-			startWorker(60, 4);
+			startWorker(1, 1); //no result? but still result?
+			startWorker(1, 2); //no result?
+			startWorker(1, 3); //no result?
+			startWorker(1, 4); //no result?
 		}
 		
 

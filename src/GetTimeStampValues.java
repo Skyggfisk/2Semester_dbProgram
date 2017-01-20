@@ -16,7 +16,7 @@ public class GetTimeStampValues {
 		case 4:
 			return getTimeStampWT(dbSinCon);
 		default:
-			return 1L;
+			return 0L;
 		}
 	}
 	
