@@ -14,8 +14,8 @@ public class Speed implements Runnable {
 
 	public void fillSpeed(){
 		int k = 0;
-		long nightstart = 1484166600000L;
-		long oneday = 86400000L;
+		long nightstart = Main.getNightStart();
+		long oneday = Main.getOneday();
 		String tmpString = databasename;
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;

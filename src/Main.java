@@ -33,20 +33,40 @@ public class Main extends Application{
 	private static String pathname = System.getenv("HOMEPATH") + "\\Desktop\\SQLQueries\\";
 	static Date time = new Date();
 	static Random rand = new Random();
+	//1480278600000 sunday 20.30	// 1480305600000 monday 04.00 // nightteam
+	//1480305600000 monday 04.00	// 1480334400000 monday 12.00 // dayteam
+	// 09.01.2017:
+	//1483907400000 sunday 20.30		// 1483934400000 monday 04.00  // nightteam
+	//1483934400000 monday 04.00 		// 1483963200000 monday 12.00  // dayteam
+	static long oneday = 86400000L;
+	static long nightstart = 1483907400000L; static long nightend = 1483934400000L;
+	static long daystart = 1483934400000L; static long dayend = 1483963200000L;
+	
+	public static long getOneday() {
+		return oneday;
+	}
 
+	public static long getNightend() {
+		return nightend;
+	}
+
+	public static long getDaystart() {
+		return daystart;
+	}
+
+	public static long getDayend() {
+		return dayend;
+	}
+	
+	public static long getNightStart(){
+		return nightstart;
+	}
+	
 	/**
 	 * works
 	 */
 	private static void fillTimeTable() {
-		//1480278600000 sunday 20.30	// 1480305600000 monday 04.00 // nightteam
-		//1480305600000 monday 04.00	// 1480334400000 monday 12.00 // dayteam
-		// 11.01.2017
-		//1484166600000 wednesday 20.30		// 1484193600000 thursday 04.00  // nightteam
-		//1484193600000 thursday 04.00		// 1484222400000 thursday 12.00  // dayteam
 		String tmpString = databasename;
-		long oneday = 86400000L;
-		long nightstart = 1484166600000L; long nightend = 1484193600000L;
-		long daystart = 1484193600000L; long dayend = 1484222400000L;
 		for (int i = 0; i < iterations; i++) { 
 				int day = i%7;
 				if(day == 5 ||day == 6){
@@ -111,10 +131,7 @@ public class Main extends Application{
 	}
 	
 	private static void fillBatches() {
-		long dayend = 1484222400000L;
-		Long tos = 1484132400000L; // kl. 11
-		long nightend = 1484193600000L;
-		long oneday = 86400000L;
+		Long tos = 1483959600000L; // kl. 11
 		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
@@ -177,8 +194,6 @@ public class Main extends Application{
 	 * works
 	 */
 	private static void fillDailyMessages() {
-		long dayend = 1484222400000L;
-		long oneday = 86400000L;
 		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
@@ -204,8 +219,6 @@ public class Main extends Application{
 	 * works
 	 */
 	public static void fillProductionStop(){
-		long dayend = 1484222400000L;
-		long oneday = 86400000L;
 		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;

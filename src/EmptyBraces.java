@@ -12,8 +12,8 @@ public class EmptyBraces implements Runnable{
 	}
 
 	public void fillEmptyBraces(){
-		long nightstart = 1484166600000L;
-		long oneday = 86400000L;
+		long oneday = Main.getOneday();
+		long nightstart = Main.getNightStart();
 		String tmpString = databasename;
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
