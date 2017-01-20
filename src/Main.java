@@ -66,19 +66,23 @@ public class Main extends Application{
 	 * works
 	 */
 	private static void fillTimeTable() {
+		long dayend1 = dayend;
+		long nightend1 = nightend;
+		long nightstart1 = nightstart;
+		long daystart1 = daystart;
 		String tmpString = databasename;
 		for (int i = 0; i < iterations; i++) { 
 				int day = i%7;
 				if(day == 5 ||day == 6){
 					//tmpString += System.lineSeparator() + " sunday or saturday";
 				} else{
-					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, teamid) VALUES ("+ daystart +", "+ dayend +" , (SELECT id FROM team WHERE teamname = 'dag' AND department = 1));";
-					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, teamid) VALUES ("+ nightstart +", "+ nightend +" , (SELECT id FROM team WHERE teamname = 'nat' AND department = 1));";
+					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, teamid) VALUES ("+ daystart1 +", "+ dayend1 +" , (SELECT id FROM team WHERE teamname = 'dag' AND department = 1));";
+					tmpString += System.lineSeparator() + " INSERT INTO teamtimetable (starttimestamp, endtimestamp, teamid) VALUES ("+ nightstart1 +", "+ nightend1 +" , (SELECT id FROM team WHERE teamname = 'nat' AND department = 1));";
 				}
-				nightstart += oneday;
-				nightend += oneday;
-				daystart += oneday;
-				dayend += oneday;
+				nightstart1 += oneday;
+				nightend1 += oneday;
+				daystart1 += oneday;
+				dayend1 += oneday;
 		}
 		printToSQLFile(tmpString, "TeamTimeTable");
 	}
@@ -131,6 +135,8 @@ public class Main extends Application{
 	}
 	
 	private static void fillBatches() {
+		long dayend1 = dayend;
+		long nightend1 = nightend;
 		Long tos = 1483959600000L; // kl. 11
 		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
@@ -149,13 +155,13 @@ public class Main extends Application{
 					int batchvalue = rand.nextInt(10000) + 10000;
 					int housenr = rand.nextInt(10) + 1;
 					int avgweight = rand.nextInt(2000) + 1500;
-					String teamnighttimetableid = "(SELECT id FROM teamtimetable WHERE endtimestamp = '" + nightend +"')";
-					String teamdaytimetableid = "(SELECT id FROM teamtimetable WHERE endtimestamp = '" + dayend + "')";
+					String teamnighttimetableid = "(SELECT id FROM teamtimetable WHERE endtimestamp = '" + nightend1 +"')";
+					String teamdaytimetableid = "(SELECT id FROM teamtimetable WHERE endtimestamp = '" + dayend1 + "')";
 					tmpString += System.lineSeparator() + " INSERT INTO batch (value, timeofslaughter, organic, batchnr, housenr, farmer, avgweight, teamnighttimetableid, teamdaytimetableid) VALUES (" + batchvalue + ", " + timeofslaughter + ", '" + organic + "', " + batchnr + ", " + housenr + ", '" + farmer + "', " + avgweight + ", " + teamnighttimetableid + ", " + teamdaytimetableid + ");";
 				}
 			}
-			dayend += oneday;
-			nightend += oneday;
+			dayend1 += oneday;
+			nightend1 += oneday;
 			tos += oneday;
 		}
 		printToSQLFile(tmpString, "Batches");
@@ -194,6 +200,7 @@ public class Main extends Application{
 	 * works
 	 */
 	private static void fillDailyMessages() {
+		long dayend1 = dayend;
 		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
@@ -203,13 +210,13 @@ public class Main extends Application{
 				for (int j = 0; j < rand.nextInt(5)+1; j++) {
 					int stoptime = rand.nextInt(200);
 					String dmessage = "my message" + stoptime;
-					long creationTime = dayend-3600000;
-					long expireTime = dayend+oneday;
-					long showTime = dayend-(oneday/2);
+					long creationTime = dayend1-3600000;
+					long expireTime = dayend1+oneday;
+					long showTime = dayend1-(oneday/2);
 					tmpString += System.lineSeparator() + "INSERT INTO dailymessages (dmessage, dtimestamp, expire, showdate) VALUES ('" + dmessage + "', " + creationTime + ", " + expireTime + ", " + showTime + ");";
 				}
 			}
-			dayend += oneday;
+			dayend1 += oneday;
 		}
 		
 		printToSQLFile(tmpString, "DailyMessages");
@@ -219,6 +226,7 @@ public class Main extends Application{
 	 * works
 	 */
 	public static void fillProductionStop(){
+		long dayend1 = dayend;
 		String tmpString = databasename + System.lineSeparator();
 		for (int i = 0; i < iterations; i++) {
 			int day = i%7;
@@ -227,14 +235,14 @@ public class Main extends Application{
 			} else {
 				for (int j = 0; j < rand.nextInt(5)+1; j++) {
 					long stoptimeOffSet = rand.nextInt(3600000) * (rand.nextInt(4) + 1);
-					long stoptime = dayend - stoptimeOffSet;
+					long stoptime = dayend1 - stoptimeOffSet;
 					String stopdescription = "Something Broke at time: " + stoptimeOffSet;
 					int stoplength = rand.nextInt(2) + 1;
-					String teamid = "SELECT id FROM teamtimetable WHERE endtimestamp = " + dayend;
+					String teamid = "SELECT id FROM teamtimetable WHERE endtimestamp = " + dayend1;
 					tmpString += System.lineSeparator() + "INSERT INTO productionstop (stoptime, stoplength, stopdescription, teamtimetableid) VALUES (" + stoptime + ", " + stoplength + ", '" + stopdescription + "', (" + teamid + "));";
 				}
 			}
-			dayend += oneday;
+			dayend1 += oneday;
 		}
 		printToSQLFile(tmpString, "ProductionStops");
 	}
