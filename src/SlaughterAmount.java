@@ -4,7 +4,7 @@ import java.util.Random;
 public class SlaughterAmount implements Runnable {
 	private DBSingleConnection dbSinCon;
 	Random rand = new Random();
-	private String databasename = "USE UCN_dmaa0216_2Sem_1;"  + System.lineSeparator() + "TRUNCATE TABLE slaughteramount";
+	private String databasename = "USE UCN_dmaa0216_2Sem_1;"  + System.lineSeparator();
 	
 	public SlaughterAmount(DBSingleConnection dbSinCon){
 		this.dbSinCon = dbSinCon;

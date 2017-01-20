@@ -4,7 +4,7 @@ import java.util.Random;
 public class EmptyBraces implements Runnable{
 	private int iterations = Main.getIterations();
 	Random rand = new Random();
-	private String databasename = "USE UCN_dmaa0216_2Sem_1;" + System.lineSeparator() + "TRUNCATE TABLE emptybraces";
+	private String databasename = "USE UCN_dmaa0216_2Sem_1;" + System.lineSeparator();
 	private ArrayList<String> records;
 	
 	public EmptyBraces(){
@@ -12,7 +12,7 @@ public class EmptyBraces implements Runnable{
 	}
 
 	public void fillEmptyBraces(){
-		long nightstart = 1480278600000L;
+		long nightstart = 1484166600000L;
 		long oneday = 86400000L;
 		String tmpString = databasename;
 		for (int i = 0; i < iterations; i++) {
