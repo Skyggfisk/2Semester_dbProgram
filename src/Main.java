@@ -27,7 +27,7 @@ public class Main extends Application{
 	}
 	private DBSingleConnection dbSinCon = new DBSingleConnection();
 
-	private static int iterations = 9;
+	private static int iterations = 11;
 
 	private static String databasename = "USE UCN_dmaa0216_2Sem_1;";
 	private static String pathname = System.getenv("HOMEPATH") + "\\Desktop\\SQLQueries\\";
