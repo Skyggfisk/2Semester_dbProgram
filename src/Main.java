@@ -99,9 +99,9 @@ public class Main extends Application{
 		}else{
 			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
 			startWorker(1, 1); //no result? but still result?
-			startWorker(1, 2); //no result?
+			/*startWorker(1, 2); //no result?
 			startWorker(1, 3); //no result?
-			startWorker(1, 4); //no result?
+			startWorker(1, 4); //no result?*/
 		}
 		
 
@@ -330,7 +330,6 @@ public class Main extends Application{
 		protected Task<String> createTask() {
 			return new Task<String>() {
 				protected String call(){
-					if(!dataTest(System.currentTimeMillis(),type, dbSinCon, LocalDateTime.now())){
 						switch(type){
 							case 1:
 								addValuesToSlaughterAmount(dbSinCon);
@@ -347,9 +346,8 @@ public class Main extends Application{
 							default:
 								return "did not do work";
 						}
-						return "did some work";
-					}
 					return "not yet";
+					
 				}
 			};
 		}
@@ -417,4 +415,10 @@ public class Main extends Application{
 		}
 		return false;
 	}
+	
+	private void dataTest2(int type, DBSingleConnection dbSinCon) {
+		GetTimeStampValues gtsv = new GetTimeStampValues();
+		//return gtsv.chooser2(type, dbSinCon);
+	}
+	
 }

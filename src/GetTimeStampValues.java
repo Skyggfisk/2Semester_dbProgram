@@ -65,8 +65,9 @@ public class GetTimeStampValues {
 	}
 	
 	public long getTimeStampSA(DBSingleConnection dbSinCon){
+		long currentTime = System.currentTimeMillis();
 		PreparedStatement statement = null;
-		String query = "SELECT TOP 1 satimestamp FROM slaughteramount ORDER BY satimestamp DESC";
+		String query = "SELECT satimestamp FROM slaughteramount WHERE satimestamp BETWEEN ? ";
 		Connection con = null;
 		ResultSet results = null;
 		long res = 0L;

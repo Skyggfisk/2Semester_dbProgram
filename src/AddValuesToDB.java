@@ -68,18 +68,30 @@ public class AddValuesToDB {
 	}
 	
 	public static String addValuesSlaughterAmount(int value, int batchid, int teamid, long satimestamp, DBSingleConnection dbSinCon) {
+		//GetTimeStampValues gtsv = new GetTimeStampValues();
+		
+		/*if(gtsv.getTimeStampSA(dbSinCon)){
+			return "værdi er sat ind";
+		}*/
+		
+		
+		
 		PreparedStatement statement = null;
-		String query = "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (?, ?, ?, ?)";
+		long currentTime = System.currentTimeMillis();
+		long oneMinAgo = currentTime - 60000;
+		String query = "BEGIN IF NOT EXISTS(SELECT * FROM slaughteramount WHERE satimestamp > ?) BEGIN INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (?, ?, ?, ?) END END";
+		//String query = "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (?, ?, ?, ?)";
 		Connection con = null;
 		
 		try {
 			con = dbSinCon.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
-			statement.setInt(1, value);
-			statement.setInt(2, batchid);
-			statement.setLong(3, satimestamp);
-			statement.setInt(4, teamid);
+			statement.setLong(1, oneMinAgo);
+			statement.setInt(2, value);
+			statement.setInt(3, batchid);
+			statement.setLong(4, satimestamp);
+			statement.setInt(5, teamid);
 			statement.executeUpdate();
 			con.commit();
 		} catch (Exception e) {
