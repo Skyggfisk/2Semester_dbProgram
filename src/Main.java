@@ -331,23 +331,23 @@ public class Main extends Application{
 			return new Task<String>() {
 				protected String call(){
 					if(!dataTest(System.currentTimeMillis(),type, dbSinCon, LocalDateTime.now())){
-					switch(type){
-					case 1:
-						addValuesToSlaughterAmount(dbSinCon);
-						break;
-					case 2:
-						addValuesToEmptyBraces(dbSinCon);
-						break;
-					case 3:
-						addValuesToSpeed(dbSinCon);
-						break;
-					case 4:
-						getTeamId(dbSinCon);
-						break;
-					default:
-						return "did not do work";
-				}
-					return "did some work";
+						switch(type){
+							case 1:
+								addValuesToSlaughterAmount(dbSinCon);
+								break;
+							case 2:
+								addValuesToEmptyBraces(dbSinCon);
+								break;
+							case 3:
+								addValuesToSpeed(dbSinCon);
+								break;
+							case 4:
+								getTeamId(dbSinCon);
+								break;
+							default:
+								return "did not do work";
+						}
+						return "did some work";
 					}
 					return "not yet";
 				}
