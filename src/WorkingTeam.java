@@ -4,7 +4,7 @@ public class WorkingTeam {
 
 	private static WorkingTeam instance;
 	private static int teamId = 0;
-	private static int teamTimeTableId = 0;
+	private static int teamTimeTableId = -1;
 	private static long startTime = 0;
 	private static long endTime = 0;
 	

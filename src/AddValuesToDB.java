@@ -2,6 +2,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class AddValuesToDB {
@@ -24,7 +25,8 @@ public class AddValuesToDB {
 			statement.setLong(4, currentTime);
 			int insert = statement.executeUpdate();
 			if(insert != -1){
-				System.out.println("Speed rows added: " + insert);
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+				System.out.println(timestamp + ": Speed rows added: " + insert);
 			}
 			con.commit();
 		} catch (Exception e) {
@@ -100,7 +102,8 @@ public class AddValuesToDB {
 			statement.setInt(5, teamid);
 			int insert = statement.executeUpdate();
 			if(insert != -1){
-				System.out.println("Slaugther rows added: " + insert);
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+				System.out.println(timestamp + ": Slaugther rows added: " + insert);
 			}
 			con.commit();
 		} catch (Exception e) {
@@ -261,7 +264,7 @@ public class AddValuesToDB {
 		PreparedStatement statement = null;
 		String query = "SELECT TOP 1 id, starttimestamp, endtimestamp, teamid FROM teamtimetable WHERE ? BETWEEN starttimestamp AND endtimestamp";
 		ResultSet result = null;		
-		int teamTimeTableId = 0;
+		int teamTimeTableId = -1;
 		long startTime = 0;
 		long endTime = 0;
 		int teamId = 0;

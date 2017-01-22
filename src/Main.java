@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -94,10 +95,10 @@ public class Main extends Application{
 			
 		}else{
 			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
-			startWorker(10, 1); //no result? but still result?
+			startWorker(60, 1); //no result? but still result?
 			//startWorker(1, 2); //no result?
-			startWorker(10, 3); //no result?
-			startWorker(10, 4); //no result?
+			startWorker(60, 3); //no result?
+			startWorker(60, 4); //no result?
 		}
 		
 
@@ -164,7 +165,9 @@ public class Main extends Application{
 	private static void addValuesToSlaughterAmount(DBSingleConnection dbSinCon) {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(16) + 200;
-		AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamTimeTableId(), time.getTime(), dbSinCon);
+		if(WorkingTeam.getInstance().getTeamTimeTableId() != -1){
+			AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamTimeTableId(), time.getTime(), dbSinCon);
+		}
 	}
 	
 	private static void fillRefreshRates() {
@@ -228,7 +231,9 @@ public class Main extends Application{
 			targetval = 6000;
 			speedval = rand.nextInt(5) + 6000;
 		}
-		AddValuesToDB.addValuesSpeed(speedval, targetval, dbSinCon);
+		if(WorkingTeam.getInstance().getTeamTimeTableId() != -1){
+			AddValuesToDB.addValuesSpeed(speedval, targetval, dbSinCon);
+		}
 	}
 	
 	/**
@@ -303,7 +308,10 @@ public class Main extends Application{
 			 */
 			@Override
 			public void handle(WorkerStateEvent event) {
-				System.out.println(WorkingTeam.getInstance().getTeamId());
+				if(type == 4){
+					Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+					System.out.println(timestamp + ": Current working team: " + WorkingTeam.getInstance().getTeamTimeTableId());
+				}
 				String value = (String)event.getSource().getValue();
 			}
 		});
