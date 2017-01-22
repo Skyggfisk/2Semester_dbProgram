@@ -62,6 +62,53 @@ public class Main extends Application{
 		return nightstart;
 	}
 	
+    /* (non-Javadoc)
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 */
+	@Override
+	public void start(Stage arg0) throws Exception {
+		 Parameters parameters = getParameters ();
+
+		Map<String, String> namedParameters = parameters.getNamed();
+		Set<String> keys = namedParameters.keySet();
+		for (String myKeys : keys) {
+			String value = namedParameters.get(myKeys);
+			switch (myKeys) {
+			case "iterations":
+				setIterations(value);
+				break;
+			case "runsingletime":
+				//ArrayList<Integer> teamids = prepareArray();
+				new Thread(new SlaughterAmount(dbSinCon)).start();
+				new Thread(new Speed()).start();
+				new Thread(new EmptyBraces()).start();
+				fillProductionStop();
+				fillDailyMessages();
+				fillBatches();
+				fillTeams();
+				fillTimeTable();
+				fillRefreshRates();
+				break;
+			default:
+				break;
+			}
+		}
+		getTeamId(dbSinCon);
+		if(namedParameters.containsKey("stopworker")){
+			
+		}else{
+			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
+			startWorker(1, 1); //no result? but still result?
+			startWorker(1, 2); //no result?
+			startWorker(1, 3); //no result?
+			startWorker(1, 4); //no result?
+		}
+		
+
+	}
+	
+	
+	
 	/**
 	 * works
 	 */
@@ -307,53 +354,6 @@ public class Main extends Application{
 			};
 		}
     }
-
-
-    
-    /* (non-Javadoc)
-	 * @see javafx.application.Application#start(javafx.stage.Stage)
-	 */
-	@Override
-	public void start(Stage arg0) throws Exception {
-		 Parameters parameters = getParameters ();
-
-		Map<String, String> namedParameters = parameters.getNamed();
-		Set<String> keys = namedParameters.keySet();
-		for (String myKeys : keys) {
-			String value = namedParameters.get(myKeys);
-			switch (myKeys) {
-			case "iterations":
-				setIterations(value);
-				break;
-			case "runsingletime":
-				//ArrayList<Integer> teamids = prepareArray();
-				new Thread(new SlaughterAmount(dbSinCon)).start();
-				new Thread(new Speed()).start();
-				new Thread(new EmptyBraces()).start();
-				fillProductionStop();
-				fillDailyMessages();
-				fillBatches();
-				fillTeams();
-				fillTimeTable();
-				fillRefreshRates();
-				break;
-			default:
-				break;
-			}
-		}
-		getTeamId(dbSinCon);
-		if(namedParameters.containsKey("stopworker")){
-			
-		}else{
-			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
-			startWorker(1, 1); //no result? but still result?
-			startWorker(1, 2); //no result?
-			startWorker(1, 3); //no result?
-			startWorker(1, 4); //no result?
-		}
-		
-
-	}
 
 	private ArrayList<Integer> prepareArray() {
 		ArrayList<Integer> teamidList = new ArrayList<>(iterations);
