@@ -11,6 +11,7 @@ public class DBSingleConnection {
 	private static final String userName = "UCN_dmaa0216_2Sem_1";
 	private static final String passWord = "Password1!";
 	
+	@SuppressWarnings("unused")
 	private DatabaseMetaData dma;
 	private static Connection con;
 	private boolean inuse = false;

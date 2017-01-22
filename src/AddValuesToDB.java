@@ -7,19 +7,22 @@ import java.util.ArrayList;
 public class AddValuesToDB {
 
 	
-	public static String addValuesSpeed(int value, int targetvalue, long stimestamp, DBSingleConnection dbSinCon) {
+	public static String addValuesSpeed(int value, int targetvalue, DBSingleConnection dbSinCon) {
 		PreparedStatement statement = null;
-		String query = "INSERT INTO speed (value, targetvalue, stimestamp) VALUES (?, ?, ?)";
+		long currentTime = System.currentTimeMillis();
+		long oneMinAgo = currentTime - 60000;
+		String query = "BEGIN IF NOT EXISTS(SELECT * FROM speed WHERE stimestamp >= ?) BEGIN INSERT INTO speed (value, targetvalue, stimestamp) VALUES (?, ?, ?) END END";
 		Connection con = null;
 		
 		try {
 			con = dbSinCon.getDBcon();
 			con.setAutoCommit(false);
 			statement = con.prepareStatement(query);
-			statement.setInt(1, value);
-			statement.setInt(2, targetvalue);
-			statement.setLong(3, stimestamp);
-			statement.executeUpdate();
+			statement.setLong(1, oneMinAgo);
+			statement.setInt(2, value);
+			statement.setInt(3, targetvalue);
+			statement.setLong(4, currentTime);
+			System.out.println("Speed rows added: " + statement.executeUpdate());
 			con.commit();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

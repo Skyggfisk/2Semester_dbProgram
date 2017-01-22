@@ -1,7 +1,6 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class GetTimeStampValues {
 	
@@ -65,7 +64,6 @@ public class GetTimeStampValues {
 	}
 	
 	public long getTimeStampSA(DBSingleConnection dbSinCon){
-		long currentTime = System.currentTimeMillis();
 		PreparedStatement statement = null;
 		String query = "SELECT satimestamp FROM slaughteramount WHERE satimestamp BETWEEN ? ";
 		Connection con = null;
