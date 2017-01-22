@@ -22,7 +22,10 @@ public class AddValuesToDB {
 			statement.setInt(2, value);
 			statement.setInt(3, targetvalue);
 			statement.setLong(4, currentTime);
-			System.out.println("Speed rows added: " + statement.executeUpdate());
+			int insert = statement.executeUpdate();
+			//if(insert != -1){
+				System.out.println("Speed rows added: " + insert);
+			//}
 			con.commit();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -95,7 +98,10 @@ public class AddValuesToDB {
 			statement.setInt(3, batchid);
 			statement.setLong(4, currentTime);
 			statement.setInt(5, teamid);
-			System.out.println("Slaugther rows added: " + statement.executeUpdate());
+			int insert = statement.executeUpdate();
+			if(insert != -1){
+				System.out.println("Slaugther rows added: " + insert);
+			}
 			con.commit();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

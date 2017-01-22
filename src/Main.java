@@ -96,8 +96,8 @@ public class Main extends Application{
 			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
 			startWorker(10, 1); //no result? but still result?
 			//startWorker(1, 2); //no result?
-			startWorker(1, 3); //no result?
-			startWorker(1, 4); //no result?
+			startWorker(10, 3); //no result?
+			startWorker(10, 4); //no result?
 		}
 		
 
@@ -164,8 +164,7 @@ public class Main extends Application{
 	private static void addValuesToSlaughterAmount(DBSingleConnection dbSinCon) {
 		int batchnr = rand.nextInt(10) + 1;
 		int slaughtervalue = rand.nextInt(16) + 200;
-		System.out.println(WorkingTeam.getInstance().getTeamTimeTableId());
-		System.out.println("slaughteramount: " + AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamTimeTableId(), time.getTime(), dbSinCon));
+		AddValuesToDB.addValuesSlaughterAmount(slaughtervalue, batchnr, WorkingTeam.getInstance().getTeamTimeTableId(), time.getTime(), dbSinCon);
 	}
 	
 	private static void fillRefreshRates() {
@@ -215,7 +214,7 @@ public class Main extends Application{
 	 */
 	private static void addValuesToEmptyBraces(DBSingleConnection dbSinCon){
 		int value = rand.nextInt(10);
-		System.out.println("empty braces: " + AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, WorkingTeam.getInstance().getTeamTimeTableId(), dbSinCon));
+		AddValuesToDB.addValuesToEmptyBraces(time.getTime(), value, WorkingTeam.getInstance().getTeamTimeTableId(), dbSinCon);
 	}
 
 	/**
@@ -229,7 +228,7 @@ public class Main extends Application{
 			targetval = 6000;
 			speedval = rand.nextInt(5) + 6000;
 		}
-		System.out.println("speed: " + AddValuesToDB.addValuesSpeed(speedval, targetval, dbSinCon));
+		AddValuesToDB.addValuesSpeed(speedval, targetval, dbSinCon);
 	}
 	
 	/**
@@ -305,7 +304,6 @@ public class Main extends Application{
 			@Override
 			public void handle(WorkerStateEvent event) {
 				String value = (String)event.getSource().getValue();
-				System.out.println(value);
 			}
 		});
     	speedWorker.start();
@@ -340,9 +338,9 @@ public class Main extends Application{
 								getTeamId(dbSinCon);
 								break;
 							default:
-								return "did not do work";
+								return "";
 						}
-					return "not yet";
+					return "";
 					
 				}
 			};
