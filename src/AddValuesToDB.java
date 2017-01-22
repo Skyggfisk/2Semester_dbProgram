@@ -23,9 +23,9 @@ public class AddValuesToDB {
 			statement.setInt(3, targetvalue);
 			statement.setLong(4, currentTime);
 			int insert = statement.executeUpdate();
-			//if(insert != -1){
+			if(insert != -1){
 				System.out.println("Speed rows added: " + insert);
-			//}
+			}
 			con.commit();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

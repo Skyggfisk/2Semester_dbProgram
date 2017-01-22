@@ -303,6 +303,7 @@ public class Main extends Application{
 			 */
 			@Override
 			public void handle(WorkerStateEvent event) {
+				System.out.println(WorkingTeam.getInstance().getTeamId());
 				String value = (String)event.getSource().getValue();
 			}
 		});
