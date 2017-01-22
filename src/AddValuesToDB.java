@@ -79,7 +79,7 @@ public class AddValuesToDB {
 		PreparedStatement statement = null;
 		long currentTime = System.currentTimeMillis();
 		long oneMinAgo = currentTime - 60000;
-		String query = "BEGIN IF NOT EXISTS(SELECT * FROM slaughteramount WHERE satimestamp > ?) BEGIN INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (?, ?, ?, ?) END END";
+		String query = "BEGIN IF NOT EXISTS(SELECT * FROM slaughteramount WHERE satimestamp >= ?) BEGIN INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (?, ?, ?, ?) END END";
 		//String query = "INSERT INTO slaughteramount (value, batchid, satimestamp, teamtimetableid) VALUES (?, ?, ?, ?)";
 		Connection con = null;
 		
@@ -90,9 +90,9 @@ public class AddValuesToDB {
 			statement.setLong(1, oneMinAgo);
 			statement.setInt(2, value);
 			statement.setInt(3, batchid);
-			statement.setLong(4, satimestamp);
+			statement.setLong(4, currentTime);
 			statement.setInt(5, teamid);
-			statement.executeUpdate();
+			System.out.println("Slaugther rows added: " + statement.executeUpdate());
 			con.commit();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

@@ -98,10 +98,10 @@ public class Main extends Application{
 			
 		}else{
 			//refresh rate (seconds) and job; 1 = slaughter, 2 = empty braces, 3 = speed, 4 = teamid
-			startWorker(1, 1); //no result? but still result?
-			/*startWorker(1, 2); //no result?
+			startWorker(10, 1); //no result? but still result?
+			//startWorker(1, 2); //no result?
 			startWorker(1, 3); //no result?
-			startWorker(1, 4); //no result?*/
+			startWorker(1, 4); //no result?
 		}
 		
 
